@@ -1,0 +1,68 @@
+.ft-activo:hover, .ft-activo:active {
+  transform: none;
+  filter: none;
+}
+/* src/components/CategoryButtons.css */
+
+.ft-categorias {
+  background: #faf4e4;
+  padding: 24px 16px 8px;
+  margin-bottom: 16px; /* Reducido a la mitad */
+}
+.ft-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  gap: 24px;
+  align-items: center;
+}
+.ft-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 36px;
+  border-radius: 12px;
+  font-family: 'Baloo 2', Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  font-size: 18px;
+  line-height: 1.1; /* <-- Cambié el valor de line-height aquí */
+  color: #fff;
+  text-decoration: none;
+  border: 0;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease, opacity .15s ease;
+  min-height: 64px; /* Ajusta el valor según prefieras */
+  height: 64px;
+  white-space: normal; /* Permite salto de línea si es necesario */
+  text-align: center;
+}
+.ft-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+.ft-btn:active {
+  transform: translateY(0);
+  filter: brightness(.98);
+}
+.ft-activo {
+  box-shadow: 0 0 0 3px #3E3E3E, inset 0 2px 12px 2px rgba(62,62,62,0.18), inset 0 0 0 1px rgba(0,0,0,.1);
+}
+.ft-rojo { background: #FF5722; } /* Cumple (Naranja fuerte) */
+.ft-amarillo { background: #FFC107; } /* Despedida de soltera (Amarillo) */
+.ft-verde { background: #4D9845; } /* Baby Shower (Verde pasto) */
+.ft-rosa { background: #F48FB1; } /* Religión (Rosa pastel) */
+.ft-celeste { background: #1976D2; } /* Fechas Patrias (Azul medio) */
+@media (max-width: 1200px) {
+  .ft-wrap { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .ft-wrap { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .ft-btn { padding: 16px; font-size: 16px; border-radius: 10px; }
+}
+@media (max-width: 420px) {
+  .ft-wrap { grid-template-columns: 1fr; }
+  .ft-btn { width: 100%; }
+}

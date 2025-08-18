@@ -5,6 +5,7 @@ import logoDesktop from '../assets/logo/Logo tuki-03.png'
 import logoMobile from '../assets/logo/Logo tuki-04.png'
 import { FaSearch } from 'react-icons/fa'
 import HamburgerMenu from './HamburgerMenu'
+import { Link } from 'react-router-dom';
 
 export default function NavBar() {
   return (
@@ -31,16 +32,18 @@ export default function NavBar() {
 
         {/* Bloque Desktop: Logo centrado */}
         <div className="flex-1 flex justify-center items-center">
-          <img
-            src={logoDesktop}
-            alt="Fiestuki logo"
-            className="hidden md:block h-48 object-contain mx-auto"
-          />
-          <img
-            src={logoMobile}
-            alt="Fiestuki logo"
-            className="md:hidden h-36 object-contain mx-auto"
-          />
+          <Link to="/">
+            <img
+              src={logoDesktop}
+              alt="Fiestuki logo"
+              className="hidden md:block h-48 object-contain mx-auto"
+            />
+            <img
+              src={logoMobile}
+              alt="Fiestuki logo"
+              className="md:hidden h-36 object-contain mx-auto"
+            />
+          </Link>
         </div>
 
         {/* Bloque Desktop: Links y carrito a la derecha */}
@@ -58,11 +61,13 @@ export default function NavBar() {
         {/* Bloque Mobile */}
         <div className="flex items-center justify-between w-full md:hidden px-4">
           <HamburgerMenu />
-          <img
-            src={logoMobile}
-            alt="Fiestuki logo"
-            className="h-36"
-          />
+          <Link to="/">
+            <img
+              src={logoMobile}
+              alt="Fiestuki logo"
+              className="h-36"
+            />
+          </Link>
           <CartWidget />
         </div>
 
