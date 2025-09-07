@@ -1,11 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCozi9ym-H_nGJevsCiCP1pGTWUXAMc4WQ",
   authDomain: "fiestuki-db.firebaseapp.com",
@@ -18,4 +15,13 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Initialize Analytics only in browser environment
+let analytics = null;
+if (typeof window !== 'undefined') {
+  const { getAnalytics } = await import("firebase/analytics");
+  analytics = getAnalytics(app);
+}
+
+// Initialize Firestore
+export const db = getFirestore(app);

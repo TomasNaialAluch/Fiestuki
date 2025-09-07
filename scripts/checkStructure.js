@@ -1,5 +1,5 @@
 // scripts/checkStructure.js
-import { db } from '../src/firebase.js';
+import { db } from '../src/services/firebase.js';
 import { getDocs, collection } from 'firebase/firestore';
 
 async function checkCollections() {
