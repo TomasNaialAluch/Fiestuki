@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import './CategoryButtons.css';
 
 const categorias = [
-  { to: '/category/cumples', texto: 'Cumples', clase: 'ft-rojo' },
+  { to: '/category/cumpleaños', texto: 'Cumpleaños', clase: 'ft-rojo' },
   { to: '/category/despedida', texto: 'Despedida de Soltera', clase: 'ft-amarillo' },
   { to: '/category/baby-shower', texto: 'Baby Shower', clase: 'ft-verde' },
   { to: '/category/religion', texto: 'Religión', clase: 'ft-rosa' },

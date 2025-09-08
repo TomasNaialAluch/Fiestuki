@@ -1,10 +1,12 @@
-import NavBar from './components/NavBar';
+import React from 'react';
 import { Routes, Route, useParams } from 'react-router-dom';
-import ItemDetailContainer from './components/ItemDetailContainer';
-import CategoryButtons from './components/CategoryButtons';
-import CategoryBanner from './components/CategoryBanner';
-import ItemListContainer from './components/ItemListContainer';
+import NavBar from './layout/Header/components/NavBar/NavBar.jsx';
 import HomePage from './pages/HomePage';
+import ItemListContainer from './components/ItemListContainer';
+import ItemDetailContainer from './components/ItemDetailContainer';
+import CategoryBanner from './components/CategoryBanner';
+import Footer from "./layout/Footer/Footer.jsx";
+import Breadcrumb from './components/Breadcrumb';
 
 function NotFound() {
   return (
@@ -16,9 +18,9 @@ function CategoryWithBanner() {
   const { categoryId } = useParams();
   return (
     <>
-      <CategoryButtons />
+      <Breadcrumb categoryId={categoryId} />
       <CategoryBanner categoryId={categoryId} />
-      <ItemListContainer greeting="Filtrado por categoría" />
+      <ItemListContainer greeting="Filtrado por categoría" categoryId={categoryId} />
     </>
   );
 }
@@ -35,6 +37,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      <Footer />
     </>
   );
 }

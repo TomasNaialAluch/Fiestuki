@@ -5,7 +5,7 @@ import bannerReligion from '../assets/banners/Banner webs-04.jpg';
 import bannerPatrias from '../assets/banners/Banner webs-05.jpg';
 
 const banners = {
-  'cumples': bannerCumples,
+  'cumpleaños': bannerCumples, // CAMBIÉ cumples por cumpleaños
   'despedida': bannerDespedida,
   'baby-shower': bannerBabyShower,
   'religion': bannerReligion,

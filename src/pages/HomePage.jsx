@@ -24,7 +24,6 @@ export default function HomePage() {
       </div>
       <CategoryButtons />
       <HomeBanners />
-      <ItemListContainer greeting="" />
     </>
   )
 }
