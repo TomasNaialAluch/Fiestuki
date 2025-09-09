@@ -1,7 +1,7 @@
 import React from 'react';
 import PaymentMethods from './PaymentMethods.jsx';
 
-const ProductInfo = ({ item, quantity, setQuantity, onAddToCart }) => {
+const ProductInfo = ({ item, quantity, setQuantity, onAddToCart, error }) => {
   const formatPrice = (price) => price?.toLocaleString();
 
   return (
@@ -116,6 +116,8 @@ const ProductInfo = ({ item, quantity, setQuantity, onAddToCart }) => {
           🛒 AGREGAR AL CARRITO
         </button>
       </div>
+
+      {error && <div className="text-red-500 font-bold mt-2">{error}</div>}
     </div>
   );
 };

@@ -7,6 +7,10 @@ import ItemDetailContainer from './components/ItemDetailContainer';
 import CategoryBanner from './components/CategoryBanner';
 import Footer from "./layout/Footer/Footer.jsx";
 import Breadcrumb from './components/Breadcrumb';
+import SideCart from './components/SideCart'
+import { useCart } from './context/CartContext'
+import Checkout from './pages/Checkout';
+import Users from './pages/Users'; // <--- AGREGÁ ESTA LÍNEA
 
 function NotFound() {
   return (
@@ -26,6 +30,8 @@ function CategoryWithBanner() {
 }
 
 function App() {
+  const { isSideCartOpen, setIsSideCartOpen } = useCart();
+
   return (
     <>
       <NavBar />
@@ -34,10 +40,13 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryWithBanner />} />
           <Route path="/item/:itemId" element={<ItemDetailContainer />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/users" element={<Users />} /> {/* <-- AGREGÁ ESTA LÍNEA */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />
+      <SideCart open={isSideCartOpen} onClose={() => setIsSideCartOpen(false)} />
     </>
   );
 }

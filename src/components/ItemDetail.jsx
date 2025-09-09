@@ -1,28 +1,33 @@
 import { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import ShippingInfo from './ShippingInfo';
 import PaymentMethods from './PaymentMethods';
 
-export default function ItemDetail({ item }) {
-  const allImages = item.images && item.images.length > 0
-    ? item.images
-    : item.mainImage
-      ? [item.mainImage]
-      : [];
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+export default function ItemDetail({
+  item,
+  quantity,
+  setQuantity,
+  onAddToCart,
+  allImages,
+  selectedImage,
+  onPrevImage,
+  onNextImage,
+  onSelectImage,
+}) {
+  const { cart, addToCart } = useCart();
+  const [error, setError] = useState('');
+  const cartItem = cart.find(prod => prod.id === item.id);
+  const alreadyInCart = cartItem ? cartItem.quantity : 0;
 
   const handleAddToCart = (qty) => {
-    alert(`Agregaste ${qty} unidades al carrito`);
-  };
-
-  const handlePrevImage = () => {
-    setSelectedImage((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
-  };
-
-  const handleNextImage = () => {
-    setSelectedImage((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+    if (qty + alreadyInCart > item.stock) {
+      setError('No hay suficiente stock disponible');
+      return;
+    }
+    addToCart(item, qty);
+    setError('');
   };
 
   return (
@@ -32,9 +37,9 @@ export default function ItemDetail({ item }) {
         <ProductGallery
           allImages={allImages}
           selectedImage={selectedImage}
-          onPrevImage={handlePrevImage}
-          onNextImage={handleNextImage}
-          onSelectImage={setSelectedImage}
+          onPrevImage={onPrevImage}
+          onNextImage={onNextImage}
+          onSelectImage={onSelectImage}
           itemName={item.name || item.nombre}
         />
       </div>
@@ -46,6 +51,7 @@ export default function ItemDetail({ item }) {
           quantity={quantity}
           setQuantity={setQuantity}
           onAddToCart={handleAddToCart}
+          error={error}
         />
 
         <ShippingInfo />

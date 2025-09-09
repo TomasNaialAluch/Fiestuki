@@ -24,9 +24,9 @@ export const NavBar = () => {
         {/* Bloque Desktop: Links y carrito a la derecha */}
         <div className="hidden md:flex md:w-1/3 justify-end items-center">
           <div className="nav-links flex items-center gap-3 font-baloo font-medium text-sm uppercase tracking-wider text-[#F25C5C]">
-            <a href="#" className="hover:opacity-80 transition-opacity">Crear cuenta</a>
+            <Link to="/users" className="hover:opacity-80 transition-opacity">Crear cuenta</Link>
             <span>|</span>
-            <a href="#" className="hover:opacity-80 transition-opacity">Iniciar sesión</a>
+            <Link to="/users" className="hover:opacity-80 transition-opacity">Iniciar sesión</Link>
             <span className="cart-widget relative ml-4">
               <CartWidget />
             </span>

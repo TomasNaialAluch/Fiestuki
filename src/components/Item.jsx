@@ -2,19 +2,32 @@
 import { Link } from 'react-router-dom';
 import { useDeviceDetection } from '../hooks/useDeviceDetection';
 import ItemMobile from './ItemMobile';
+import { useCart } from '../context/CartContext';
+import { useState } from 'react';
 
 export default function Item({ item }) {
   const { isMobile } = useDeviceDetection();
+  const { addToCart, cart } = useCart();
+  const [error, setError] = useState('');
 
-  // Si es mobile, usa el componente ItemMobile
+  // Si es mobile, pasa addToCart como prop
   if (isMobile) {
-    return <ItemMobile item={item} />;
+    return <ItemMobile item={item} addToCart={addToCart} />;
   }
 
-  // Desktop version
-  const handleAddToCart = (e) => {
+  const cartItem = cart.find(prod => prod.id === item.id);
+  const alreadyInCart = cartItem ? cartItem.quantity : 0;
+
+  const handleAddToCart = (e, qty = 1) => {
+    e.preventDefault(); // Evita la navegación al detalle solo cuando se hace click en el botón
     e.stopPropagation();
-    console.log('Agregando al carrito:', item);
+
+    if (qty + alreadyInCart > item.stock) {
+      setError('No hay suficiente stock disponible');
+      return;
+    }
+    addToCart(item, qty);
+    setError('');
   };
 
   return (
@@ -45,11 +58,13 @@ export default function Item({ item }) {
           </div>
 
           <button 
-            onClick={handleAddToCart}
+            onClick={(e) => handleAddToCart(e, 1)}
             className="w-full bg-[#F0AB7A] text-white font-bold py-2 px-4 rounded-xl hover:bg-[#E55A31] transition-colors duration-200 shadow-sm font-baloo text-base"
           >
             🛒 Agregar al carrito
           </button>
+
+          {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
         </div>
       </div>
     </Link>

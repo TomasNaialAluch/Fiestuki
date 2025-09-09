@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PaymentMethods from './PaymentMethods.jsx';
+import { useCart } from '../context/CartContext';
 
 const ItemDetailMobile = ({ 
   item, 
@@ -13,6 +14,23 @@ const ItemDetailMobile = ({
   onSelectImage
 }) => {
   const formatPrice = (price) => price?.toLocaleString();
+  const { cart } = useCart();
+  const [error, setError] = useState('');
+
+  // Calcular cuántos ya hay en el carrito
+  const cartItem = cart.find(prod => prod.id === item.id);
+  const alreadyInCart = cartItem ? cartItem.quantity : 0;
+  const stock = item.stock ?? 0;
+
+  // Handler para agregar al carrito con validación de stock
+  const handleAddToCart = (qty) => {
+    if (qty + alreadyInCart > stock) {
+      setError('No hay suficiente stock disponible');
+      return;
+    }
+    setError('');
+    onAddToCart(qty);
+  };
 
   return (
     <div style={{
@@ -149,16 +167,20 @@ const ItemDetailMobile = ({
           </span>
           
           <button
-            onClick={() => setQuantity(quantity + 1)}
+            onClick={() => {
+              if (quantity < stock - alreadyInCart) setQuantity(quantity + 1);
+            }}
+            disabled={quantity >= stock - alreadyInCart}
             style={{
               width: '50px',
               height: '50px',
               border: 'none',
               borderRadius: '12px',
-              background: '#4ecdc4',
+              background: quantity >= stock - alreadyInCart ? '#ccc' : '#4ecdc4',
               color: '#fff',
               fontSize: '24px',
-              fontWeight: 700
+              fontWeight: 700,
+              cursor: quantity >= stock - alreadyInCart ? 'not-allowed' : 'pointer'
             }}
           >
             +
@@ -166,7 +188,7 @@ const ItemDetailMobile = ({
         </div>
 
         <button
-          onClick={() => onAddToCart(quantity)}
+          onClick={() => handleAddToCart(quantity)}
           style={{
             width: '100%',
             padding: '18px',
@@ -181,6 +203,14 @@ const ItemDetailMobile = ({
         >
           🛒 AGREGAR AL CARRITO
         </button>
+        {error && (
+          <div style={{ color: '#ff6b6b', fontWeight: 700, marginTop: 10, textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
+        <div style={{ fontSize: 13, color: '#888', marginTop: 8, textAlign: 'center' }}>
+          Stock disponible: {stock - alreadyInCart}
+        </div>
       </div>
     </div>
   );
