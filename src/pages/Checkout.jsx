@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { addDoc, collection, getFirestore, Timestamp } from 'firebase/firestore';
 
 export default function Checkout() {
   const { cart, totalPrice, clearCart } = useCart();
+  const { user, addOrderToHistory } = useAuth();
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', direccion: '' });
   const [orderId, setOrderId] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,11 +33,18 @@ export default function Checkout() {
         quantity: item.quantity
       })),
       total: totalPrice,
-      date: Timestamp.now()
+      date: Timestamp.now(),
+      userId: user?.uid || null // Asociar pedido con usuario si está logueado
     };
     try {
       const docRef = await addDoc(collection(db, 'orders'), order);
       setOrderId(docRef.id);
+      
+      // Si el usuario está logueado, agregar el pedido a su historial
+      if (user) {
+        await addOrderToHistory(docRef.id);
+      }
+      
       clearCart();
     } catch (err) {
       setError('Ocurrió un error al generar la orden. Intentá de nuevo.');
