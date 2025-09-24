@@ -10,8 +10,10 @@ Tema: Fiestuki — tienda de artículos para fiestas.
 - Página de detalle (ItemDetail) con galería e ItemCount
 - Carrito global con Context + SideCart
 - Checkout que crea órdenes en Firestore y muestra ID de la orden
+- **📧 Notificaciones por email** con Firebase Trigger Email extension
 - Autenticación: Email/Password y Google (Firebase Auth)
 - Responsive: estilos pensados para Desktop y Mobile
+- Sistema de notificaciones toast y búsqueda inteligente
 - Documentación interna: COMPONENTS_MAP, TECHNICAL_DOCS, MODIFICATION_GUIDE
 
 ---
@@ -19,6 +21,7 @@ Tema: Fiestuki — tienda de artículos para fiestas.
 ## 🧰 Requisitos
 - Node.js >= 16
 - Cuenta Firebase con Firestore y Authentication habilitados
+- **Gmail con verificación en 2 pasos** para notificaciones por email
 
 ---
 
@@ -33,7 +36,11 @@ Tema: Fiestuki — tienda de artículos para fiestas.
    npm install
    ```
 3. Crear archivo de variables de entorno (ver `.env.example`) y completar con tus credenciales de Firebase.
-4. Levantar servidor de desarrollo:
+4. **Configurar notificaciones por email** (opcional):
+   - Instalar Firebase Extension "Trigger Email from Firestore"
+   - Configurar Gmail SMTP con App Password
+   - Ver sección "📧 Configuración de Email" más abajo
+5. Levantar servidor de desarrollo:
    ```
    npm run dev
    ```
@@ -51,6 +58,50 @@ Usa prefijo `VITE_` para Vite. Crea un `.env` basado en `.env.example`.
 - VITE_FIREBASE_APP_ID
 
 (Ver archivo `.env.example` incluido)
+
+---
+
+## 📧 Configuración de Email (Firebase Extension)
+
+### **Paso 1: Instalar Firebase Extension**
+1. Ve a [Firebase Console](https://console.firebase.google.com/) → Tu proyecto
+2. Navega a **Extensions** en el menú lateral
+3. Busca **"Trigger Email from Firestore"**
+4. Haz clic en **"Install"**
+
+### **Paso 2: Configurar Gmail SMTP**
+1. **Habilitar verificación en 2 pasos** en tu cuenta de Google
+2. **Generar App Password:**
+   - Ve a [Google Account Security](https://myaccount.google.com/security)
+   - Busca "Contraseñas de aplicación"
+   - Genera una nueva contraseña para "Firebase"
+   - **Guarda la contraseña** (formato: `xxxx xxxx xxxx xxxx`)
+
+### **Paso 3: Configurar la Extensión**
+En la configuración de la extensión, completa:
+
+- **Firestore Instance ID:** `(default)`
+- **Firestore Instance Location:** `southamerica-east1` (o tu región)
+- **Authentication Type:** `UsernamePassword`
+- **SMTP connection URI:** 
+  ```
+  smtps://tu-email@gmail.com:tu-app-password@smtp.gmail.com:465
+  ```
+  **Ejemplo:**
+  ```
+  smtps://tomasaluch.ar@gmail.com:hmya hrkd irfd tbtl@smtp.gmail.com:465
+  ```
+
+### **Paso 4: Probar la configuración**
+1. Haz una compra en la app
+2. La extensión enviará automáticamente un email de confirmación
+3. Revisa la carpeta de **Spam** si no llega inmediatamente
+
+### **🔧 Cómo funciona**
+- Cuando se crea una orden en Firestore (`orders` collection)
+- La extensión detecta el evento automáticamente
+- Envía un email con los detalles de la compra
+- **No requiere código adicional** - funciona automáticamente
 
 ---
 
@@ -84,6 +135,11 @@ Colección `orders` — cada orden guarda:
 - items: [{ id, name, price, quantity }]
 
 En checkout se crea un doc en `orders` y se muestra `orderId` al usuario.
+
+### **📧 Notificaciones automáticas**
+- **Firebase Extension "Trigger Email"** detecta nuevas órdenes
+- Envía email de confirmación automáticamente
+- **No requiere código adicional** - funciona con la extensión
 
 ---
 
