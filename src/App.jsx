@@ -8,7 +8,10 @@ import CategoryBanner from './components/CategoryBanner';
 import Footer from "./layout/Footer/Footer.jsx";
 import Breadcrumb from './components/Breadcrumb';
 import SideCart from './components/SideCart'
+import SearchNotification from './components/SearchNotification'
+import NotificationToast from './components/NotificationToast'
 import { useCart } from './context/CartContext'
+import { useUI } from './context/UIContext'
 import Checkout from './pages/Checkout';
 import Users from './pages/Users'; // <--- AGREGÁ ESTA LÍNEA
 
@@ -30,7 +33,7 @@ function CategoryWithBanner() {
 }
 
 function App() {
-  const { isSideCartOpen, setIsSideCartOpen } = useCart();
+  const { isSideCartOpen, setIsSideCartOpen } = useUI();
 
   return (
     <>
@@ -47,6 +50,8 @@ function App() {
       </main>
       <Footer />
       <SideCart open={isSideCartOpen} onClose={() => setIsSideCartOpen(false)} />
+      <SearchNotification />
+      <NotificationToast />
     </>
   );
 }

@@ -27,7 +27,7 @@ export default function SideCart({ open, onClose }) {
       {/* SideCart */}
       <aside
         className={`
-          fixed top-0 right-0 h-full w-80 bg-white rounded-l-2xl shadow-2xl z-50 flex flex-col
+          fixed top-0 right-0 h-full w-80 bg-[#FAF4E4] rounded-l-2xl shadow-2xl z-50 flex flex-col
           transition-all duration-300 ease-in-out
           ${open ? 'translate-x-0' : 'translate-x-full'}
         `}

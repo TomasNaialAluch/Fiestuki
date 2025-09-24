@@ -1,8 +1,10 @@
 import { FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '../../../../context/CartContext'
+import { useUI } from '../../../../context/UIContext'
 
 export default function CartWidget() {
-  const { totalQuantity, setIsSideCartOpen } = useCart();
+  const { totalQuantity } = useCart();
+  const { setIsSideCartOpen } = useUI();
 
   return (
     // Icono de carrito con badge de cantidad

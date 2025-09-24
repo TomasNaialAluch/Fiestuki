@@ -1,6 +1,70 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSearch } from '../../context/SearchContext';
+import { useUI } from '../../context/UIContext';
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const { search, clearSearch } = useSearch();
+  const { addNotification } = useUI();
+  
+  const categorias = [
+    { id: 'cumpleaños', nombre: 'Cumpleaños', emoji: '🎂' },
+    { id: 'despedida', nombre: 'Despedida', emoji: '👋' },
+    { id: 'baby-shower', nombre: 'Baby Shower', emoji: '👶' },
+    { id: 'religion', nombre: 'Religión', emoji: '⛪' },
+    { id: 'fiestas-patrias', nombre: 'Fiestas Patrias', emoji: '🇦🇷' }
+  ];
+
+  // Función de scroll suave (igual que el logo)
+  const smoothScrollToTop = () => {
+    const startPosition = window.pageYOffset;
+    const startTime = performance.now();
+    const duration = 1500; // 1.5 segundos
+
+    const easeInOutBounce = (t) => {
+      if (t < 0.5) {
+        return 4 * t * t * t;
+      } else {
+        const f = 2 * t - 2;
+        return 1 + (f * f * f) / 2;
+      }
+    };
+
+    const animateScroll = (currentTime) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+
+      const easeProgress = easeInOutBounce(progress);
+      const currentPosition = startPosition * (1 - easeProgress);
+
+      window.scrollTo(0, currentPosition);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      } else {
+        // Mini rebote al final
+        window.scrollTo({ top: -20, behavior: 'smooth' });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  };
+
+  // Manejar click en categoría
+  const handleCategoryClick = (categoryId) => {
+    // Navegar a la categoría
+    navigate(`/category/${categoryId}`);
+    
+    // Scroll suave después de un pequeño delay
+    setTimeout(() => {
+      smoothScrollToTop();
+    }, 300);
+  };
+
   return (
     <footer style={{
       background: 'linear-gradient(135deg, #f4c2a1 0%, #f7e7ce 30%, #e8f4f8 70%, #d4e8fc 100%)',
@@ -109,33 +173,37 @@ const Footer = () => {
               padding: 0,
               margin: 0
             }}>
-              {['🎂 Cumpleaños', '👋 Despedida', '👶 Baby Shower', '⛪ Religión', '🇦🇷 Fiestas Patrias'].map((item, index) => (
+              {categorias.map((categoria, index) => (
                 <li key={index} style={{
                   marginBottom: '10px'
                 }}>
-                  <a href="#" style={{
-                    color: '#5a5a5a',
-                    textDecoration: 'none',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    transition: 'all 0.3s ease',
-                    display: 'block',
-                    padding: '5px 10px',
-                    borderRadius: '20px',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255,255,255,0.4)';
-                    e.target.style.transform = 'translateX(5px)';
-                    e.target.style.color = '#3a3a3a';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'transparent';
-                    e.target.style.transform = 'translateX(0)';
-                    e.target.style.color = '#5a5a5a';
-                  }}>
-                    {item}
-                  </a>
+                  <span 
+                    onClick={() => handleCategoryClick(categoria.id)}
+                    style={{
+                      color: '#5a5a5a',
+                      textDecoration: 'none',
+                      fontSize: '15px',
+                      fontWeight: 600,
+                      transition: 'all 0.3s ease',
+                      display: 'block',
+                      padding: '5px 10px',
+                      borderRadius: '20px',
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(255,255,255,0.4)';
+                      e.target.style.transform = 'translateX(5px)';
+                      e.target.style.color = '#3a3a3a';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'transparent';
+                      e.target.style.transform = 'translateX(0)';
+                      e.target.style.color = '#5a5a5a';
+                    }}
+                  >
+                    {categoria.emoji} {categoria.nombre}
+                  </span>
                 </li>
               ))}
             </ul>

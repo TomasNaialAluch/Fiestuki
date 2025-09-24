@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FaBars, FaTimes } from 'react-icons/fa'
+import { FaBars } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom';
 
 const categorias = [
@@ -10,18 +10,13 @@ const categorias = [
   { id: 'fiestas', nombre: 'Fiestas Patrias', color: '#1976D2' },
 ];
 
-export default function HamburgerMenu() {
+export default function HamburgerMenu({ showMobileSearch, toggleMobileSearch }) {
   const [open, setOpen] = useState(false)
-  const [closing, setClosing] = useState(false)
   const navigate = useNavigate();
 
-  // Maneja la animación de giro al cerrar el menú
+  // Maneja el cierre del menú
   const handleClose = () => {
-    setClosing(true)
-    setTimeout(() => {
-      setOpen(false)
-      setClosing(false)
-    }, 300)
+    setOpen(false)
   }
 
   return (
@@ -47,7 +42,7 @@ export default function HamburgerMenu() {
 
       {/* Panel lateral del menú */}
       <div
-        className={`fixed inset-y-0 left-0 w-64 bg-white p-6 pt-4 z-30 transition-all duration-500 ease-in-out
+        className={`fixed inset-y-0 left-0 w-64 bg-[#FAF4E4] p-6 pt-4 z-30 transition-all duration-500 ease-in-out
           ${open ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}
         `}
         style={{ boxShadow: open ? '2px 0 16px rgba(0,0,0,0.10)' : 'none' }}
@@ -63,20 +58,38 @@ export default function HamburgerMenu() {
           {/* Botón cerrar */}
           <button
             onClick={handleClose}
-            className={`p-3 ml-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none
-              transition-transform duration-300 ease-in-out
-              ${closing ? 'rotate-90' : 'rotate-0'}
-            `}
+            className="group p-2 -m-2 transition-transform duration-300"
             aria-label="Cerrar menú"
           >
-            <FaTimes size={28} />
+            {/* SVG cruz animada con rotación - misma que el carrito */}
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              className="stroke-gray-400 group-hover:stroke-[#FF6B35] transition-colors duration-200 group-hover:rotate-90 transform"
+              style={{ display: 'block', transition: 'transform 0.3s' }}
+            >
+              <line x1="8" y1="8" x2="24" y2="24" strokeWidth="3" strokeLinecap="round" />
+              <line x1="24" y1="8" x2="8" y2="24" strokeWidth="3" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
         <hr className="border-t border-gray-200 mb-8" />
-        <div className="mt-8 flex flex-col items-center">
-          <p className="text-lg font-semibold text-gray-700 mb-2">Menú en construcción</p>
-          <span className="text-sm text-gray-400">¡Pronto vas a poder navegar desde acá!</span>
+        
+        {/* Botón mostrar/ocultar buscador */}
+        <div className="px-6 mb-6">
+          <button
+            onClick={() => {
+              toggleMobileSearch();
+              handleClose();
+            }}
+            className="w-full bg-[#FF6B35] hover:bg-[#E55A31] text-white font-baloo font-bold py-3 px-4 rounded-xl transition-colors duration-200 shadow-lg flex items-center justify-center gap-2"
+          >
+            <span className="text-xl">🔍</span>
+            <span>{showMobileSearch ? 'Ocultar buscador' : 'Mostrar buscador'}</span>
+          </button>
         </div>
+
         {/* Navegación de categorías como texto colorido */}
         <nav className="flex flex-col gap-4 px-6 py-8">
           {categorias.map(cat => (

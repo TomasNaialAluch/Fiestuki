@@ -1,13 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
+import { createContextFactory } from "../utils/contextFactory";
 
-// Crear el contexto
-export const AuthContext = createContext();
-
-// Hook para usar el contexto fácilmente
-export const useAuth = () => useContext(AuthContext);
+// Crear el contexto usando el factory (DRY)
+const { Context: AuthContext, useContextHook } = createContextFactory('Auth');
+export { AuthContext };
+export const useAuth = useContextHook;
 
 // Provider de autenticación
 export function AuthProvider({ children }) {

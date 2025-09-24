@@ -1,15 +1,14 @@
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
+import { createContextFactory } from "../utils/contextFactory";
 
-// Crear el contexto
-export const CartContext = createContext();
-
-// Hook para usar el contexto fácilmente
-export const useCart = () => useContext(CartContext);
+// Crear el contexto usando el factory (DRY)
+const { Context: CartContext, useContextHook } = createContextFactory('Cart');
+export { CartContext };
+export const useCart = useContextHook;
 
 // Provider del carrito
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const [isSideCartOpen, setIsSideCartOpen] = useState(false);
 
   // Agregar producto al carrito
   const addToCart = (item, quantity) => {
@@ -49,8 +48,6 @@ export function CartProvider({ children }) {
         clearCart,
         totalQuantity,
         totalPrice,
-        isSideCartOpen,
-        setIsSideCartOpen,
       }}
     >
       {children}
