@@ -85,7 +85,7 @@ const GoogleMapComponent = ({ address }) => {
     } else {
       // Cargar Google Maps API
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AlzaSyAas9KthJKkzY3FYHIKK3CSjugiGf15bT8&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = geocodeAddress;

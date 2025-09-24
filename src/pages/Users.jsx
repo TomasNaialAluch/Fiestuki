@@ -19,6 +19,9 @@ export default function Users() {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const fileInputRef = useRef(null);
   const { user, userProfile, logout, loading, updateUserProfile } = useAuth();
   const { isMobile } = useDeviceDetection();
@@ -114,6 +117,44 @@ export default function Users() {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleViewOrderDetails = async (orderId) => {
+    setSelectedOrder(orderId);
+    setLoadingOrder(true);
+    setError('');
+    
+    try {
+      // Aquí podrías hacer una consulta a Firestore para obtener los detalles del pedido
+      // Por ahora, simularemos los datos
+      const mockOrderDetails = {
+        id: orderId,
+        date: new Date().toLocaleDateString('es-AR'),
+        items: [
+          { name: 'Producto de ejemplo', quantity: 2, price: 1500 },
+          { name: 'Otro producto', quantity: 1, price: 800 }
+        ],
+        total: 3800,
+        status: 'Completado',
+        buyer: {
+          nombre: userProfile?.displayName || 'Usuario',
+          email: userProfile?.email || user?.email || 'email@ejemplo.com',
+          telefono: userProfile?.whatsapp || 'Sin teléfono',
+          direccion: userProfile?.street || 'Sin dirección'
+        }
+      };
+      
+      setOrderDetails(mockOrderDetails);
+    } catch (err) {
+      setError('Error al cargar los detalles del pedido');
+    } finally {
+      setLoadingOrder(false);
+    }
+  };
+
+  const closeOrderDetails = () => {
+    setSelectedOrder(null);
+    setOrderDetails(null);
   };
 
   const handleImageUpload = async (event) => {
@@ -558,7 +599,10 @@ export default function Users() {
                       <p className="font-medium text-gray-800">Pedido #{orderId.slice(-8)}</p>
                       <p className="text-sm text-gray-600">Pedido #{index + 1}</p>
                     </div>
-                    <button className="text-[#FF6B35] hover:text-[#e55a2e] font-medium">
+                    <button 
+                      onClick={() => handleViewOrderDetails(orderId)}
+                      className="text-[#FF6B35] hover:text-[#e55a2e] font-medium transition-colors"
+                    >
                       Ver detalles
                     </button>
                   </div>
@@ -580,6 +624,86 @@ export default function Users() {
             </div>
           )}
         </div>
+
+        {/* Modal de detalles de pedido */}
+        {selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-gray-800">Detalles del Pedido</h3>
+                  <button
+                    onClick={closeOrderDetails}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {loadingOrder ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF6B35]"></div>
+                  </div>
+                ) : orderDetails ? (
+                  <div className="space-y-6">
+                    {/* Información del pedido */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">ID del Pedido</p>
+                          <p className="font-semibold">{orderDetails.id}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Fecha</p>
+                          <p className="font-semibold">{orderDetails.date}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Estado</p>
+                          <p className="font-semibold text-green-600">{orderDetails.status}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Total</p>
+                          <p className="font-semibold text-[#FF6B35]">${orderDetails.total.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Productos */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">Productos</h4>
+                      <div className="space-y-2">
+                        {orderDetails.items.map((item, index) => (
+                          <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <div>
+                              <p className="font-medium">{item.name}</p>
+                              <p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
+                            </div>
+                            <p className="font-semibold">${(item.price * item.quantity).toLocaleString()}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Información del comprador */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">Información de Entrega</h4>
+                      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                        <p><span className="font-medium">Nombre:</span> {orderDetails.buyer.nombre}</p>
+                        <p><span className="font-medium">Email:</span> {orderDetails.buyer.email}</p>
+                        <p><span className="font-medium">Teléfono:</span> {orderDetails.buyer.telefono}</p>
+                        <p><span className="font-medium">Dirección:</span> {orderDetails.buyer.direccion}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">No se pudieron cargar los detalles del pedido</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
