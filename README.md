@@ -56,8 +56,17 @@ Usa prefijo `VITE_` para Vite. Crea un `.env` basado en `.env.example`.
 - VITE_FIREBASE_STORAGE_BUCKET
 - VITE_FIREBASE_MESSAGING_SENDER_ID
 - VITE_FIREBASE_APP_ID
+- **VITE_GOOGLE_MAPS_API_KEY** (para mapas de ubicación)
 
-(Ver archivo `.env.example` incluido)
+### **🗺️ Configurar Google Maps API:**
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un proyecto o selecciona uno existente
+3. Habilita la **Maps JavaScript API**
+4. Crea una **API Key** con restricciones de dominio
+5. Agrega la key a tu archivo `.env`:
+   ```
+   VITE_GOOGLE_MAPS_API_KEY=tu_api_key_aqui
+   ```
 
 ---
 
