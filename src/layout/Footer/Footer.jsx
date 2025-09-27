@@ -227,7 +227,7 @@ const Footer = () => {
               textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
               lineHeight: '1.8'
             }}>
-              <p style={{ margin: '0 0 10px 0' }}>📱 WhatsApp: +54 9 11 1234-5678</p>
+              <p style={{ margin: '0 0 10px 0' }}>📱 WhatsApp: +54 9 297 421-8265</p>
               <p style={{ margin: '0 0 10px 0' }}>📧 Email: hola@fiestuki.com</p>
               <p style={{ margin: '0 0 10px 0' }}>📍 Buenos Aires, Argentina</p>
               <p style={{ margin: '0 0 10px 0' }}>🕐 Lun a Vie: 9:00 - 18:00</p>

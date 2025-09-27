@@ -22,6 +22,7 @@ export default function Users() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loadingOrder, setLoadingOrder] = useState(false);
+  const [isValidAddress, setIsValidAddress] = useState(false);
   const fileInputRef = useRef(null);
   const { user, userProfile, logout, loading, updateUserProfile } = useAuth();
   const { isMobile } = useDeviceDetection();
@@ -46,6 +47,27 @@ export default function Users() {
     }
   }, [userProfile, user]);
 
+  // Validar dirección existente cuando se carga el perfil
+  useEffect(() => {
+    if (profileForm.street && profileForm.street.length > 10) {
+      console.log('🔄 VALIDANDO DIRECCIÓN EXISTENTE:', profileForm.street);
+      
+      const formattedAddress = validateAndFormatAddress(profileForm.street);
+      if (formattedAddress) {
+        const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formattedAddress)}`;
+        console.log('🗺️ LINK DE GOOGLE MAPS (dirección existente):', googleMapsLink);
+        
+        setIsValidAddress(true);
+        console.log('✅ DIRECCIÓN EXISTENTE VÁLIDA - Input debería mostrar verde');
+      } else {
+        setIsValidAddress(false);
+        console.log('❌ DIRECCIÓN EXISTENTE INVÁLIDA');
+      }
+    } else {
+      setIsValidAddress(false);
+    }
+  }, [profileForm.street]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#FAF4E4] to-[#F0E6D2] flex items-center justify-center">
@@ -63,12 +85,70 @@ export default function Users() {
 
   const handleProfileChange = e => {
     const { name, value } = e.target;
+    console.log('📝 INPUT CAMBIADO:', { name, value });
     setProfileForm({ ...profileForm, [name]: value });
 
-    // Si es el campo de dirección, mostrar sugerencias básicas
+    // Si es el campo de dirección, generar link de Google Maps
     if (name === 'street' && value.length > 3) {
+      console.log('🏠 Dirección ingresada:', value);
+      
+      // Generar link de Google Maps
+      const formattedAddress = validateAndFormatAddress(value);
+      if (formattedAddress) {
+        const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formattedAddress)}`;
+        console.log('🗺️ LINK DE GOOGLE MAPS:', googleMapsLink);
+        console.log('📍 Dirección formateada para el link:', formattedAddress);
+        
+        // También generar link directo para abrir en nueva pestaña
+        console.log('🔗 Para abrir en nueva pestaña, usa:');
+        console.log(`window.open('${googleMapsLink}', '_blank')`);
+        
+        // Validar que la dirección sea válida (más de 10 caracteres)
+        const isValid = value.trim().length >= 10;
+        setIsValidAddress(isValid);
+        
+        if (isValid) {
+          console.log('✅ DIRECCIÓN VÁLIDA - Input debería mostrar verde');
+        } else {
+          console.log('⚠️ DIRECCIÓN MUY CORTA - Input debería mostrar naranja');
+        }
+      } else {
+        setIsValidAddress(false);
+        console.log('❌ DIRECCIÓN INVÁLIDA - Input debería mostrar rojo');
+      }
+      
       searchAddressSuggestions(value);
+    } else if (name === 'street') {
+      setIsValidAddress(false);
     }
+  };
+
+  const validateAndFormatAddress = (address) => {
+    console.log('🔍 VALIDANDO DIRECCIÓN:', address);
+    
+    if (!address || address.trim().length < 5) {
+      console.log('❌ Dirección muy corta o vacía');
+      return null;
+    }
+
+    // Formatear la dirección para Google Maps
+    let formattedAddress = address.trim();
+    console.log('📍 Dirección original:', formattedAddress);
+    
+    // Agregar "Argentina" si no está presente
+    if (!formattedAddress.toLowerCase().includes('argentina')) {
+      formattedAddress += ', Argentina';
+    }
+    
+    // Agregar "Buenos Aires" si no está presente
+    if (!formattedAddress.toLowerCase().includes('buenos aires') && 
+        !formattedAddress.toLowerCase().includes('caba') &&
+        !formattedAddress.toLowerCase().includes('capital federal')) {
+      formattedAddress += ', Buenos Aires';
+    }
+
+    console.log('✅ Dirección formateada:', formattedAddress);
+    return formattedAddress;
   };
 
   const searchAddressSuggestions = (query) => {
@@ -279,12 +359,12 @@ export default function Users() {
 
   if (user) {
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-[#FAF4E4] to-[#F0E6D2] ${isMobile ? 'px-4 py-6' : 'px-8 py-8'}`}>
-        <div className={`max-w-4xl mx-auto ${isMobile ? 'space-y-4' : 'space-y-6'}`}>
+      <div className={`min-h-screen bg-gradient-to-br from-[#FAF4E4] to-[#F0E6D2] ${isMobile ? 'px-2 py-4' : 'px-8 py-8'}`}>
+        <div className={`max-w-4xl mx-auto ${isMobile ? 'space-y-6' : 'space-y-6'}`}>
           
           {/* Header del perfil */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 backdrop-blur-sm border border-white/20">
-            <div className={`flex ${isMobile ? 'flex-col items-center space-y-4' : 'items-center space-x-6'}`}>
+          <div className={`bg-white rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 ${isMobile ? 'p-4' : 'p-6'}`}>
+            <div className={`flex ${isMobile ? 'flex-col items-center space-y-6' : 'items-center space-x-6'}`}>
               
               {/* Foto de perfil */}
               <div className="relative">
@@ -325,9 +405,9 @@ export default function Users() {
               </div>
 
               {/* Info básica */}
-              <div className={`flex-1 ${isMobile ? 'text-center' : ''}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <h1 className="text-3xl font-bold font-baloo text-gray-800">
+              <div className={`flex-1 ${isMobile ? 'text-center w-full' : ''}`}>
+                <div className={`flex items-center gap-2 mb-3 ${isMobile ? 'flex-col space-y-2' : ''}`}>
+                  <h1 className={`font-bold font-baloo text-gray-800 ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
                     {userProfile?.displayName || user.displayName || 'Usuario'}
                   </h1>
                   {!isProfileComplete && (
@@ -344,23 +424,23 @@ export default function Users() {
                   )}
                 </div>
                 
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className={`flex items-center gap-2 text-gray-600 mb-2 ${isMobile ? 'justify-center' : ''}`}>
                   <FaEnvelope className="w-4 h-4" />
-                  <span>{user.email}</span>
+                  <span className={isMobile ? 'text-sm' : ''}>{user.email}</span>
                 </div>
                 
                 {userProfile?.whatsapp && (
-                  <div className="flex items-center gap-2 text-gray-600 mb-1">
+                  <div className={`flex items-center gap-2 text-gray-600 mb-2 ${isMobile ? 'justify-center' : ''}`}>
                     <FaWhatsapp className="w-4 h-4 text-green-500" />
-                    <span>{userProfile.whatsapp}</span>
+                    <span className={isMobile ? 'text-sm' : ''}>{userProfile.whatsapp}</span>
                   </div>
                 )}
                 
                 {userProfile?.street && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className={`flex items-center gap-2 text-gray-600 ${isMobile ? 'justify-center flex-wrap' : ''}`}>
                     <FaMapMarkerAlt className="w-4 h-4" />
-                    <span>{userProfile.street}</span>
-                    {userProfile.postalCode && <span className="text-sm">({userProfile.postalCode})</span>}
+                    <span className={`${isMobile ? 'text-sm text-center' : ''}`}>{userProfile.street}</span>
+                    {userProfile.postalCode && <span className={`text-sm ${isMobile ? 'block w-full text-center mt-1' : ''}`}>({userProfile.postalCode})</span>}
                   </div>
                 )}
 
@@ -379,19 +459,19 @@ export default function Users() {
               {/* Botón cerrar sesión */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                className={`flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all ${isMobile ? 'w-full justify-center' : ''}`}
               >
                 <FaSignOutAlt className="w-4 h-4" />
-                <span>Cerrar Sesión</span>
+                <span className={isMobile ? 'text-sm' : ''}>Cerrar Sesión</span>
               </button>
             </div>
           </div>
 
           {/* Formulario de información personal - Siempre visible */}
-          <div className="bg-white rounded-2xl shadow-xl p-6 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-bold font-baloo text-gray-800">Información Personal</h2>
+          <div className={`bg-white rounded-2xl shadow-xl backdrop-blur-sm border border-white/20 ${isMobile ? 'p-4' : 'p-6'}`}>
+            <div className={`flex items-center justify-between mb-6 ${isMobile ? 'flex-col space-y-4' : ''}`}>
+              <div className={`flex items-center gap-3 ${isMobile ? 'flex-col text-center' : ''}`}>
+                <h2 className={`font-bold font-baloo text-gray-800 ${isMobile ? 'text-xl' : 'text-2xl'}`}>Información Personal</h2>
                 {!isProfileComplete && (
                   <div className="flex items-center gap-1 text-orange-600 text-sm">
                     <FaExclamationCircle className="w-4 h-4" />
@@ -402,21 +482,21 @@ export default function Users() {
               <button
                 onClick={handleSaveProfile}
                 disabled={saving}
-                className="flex items-center gap-2 bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a2e] transition-all disabled:opacity-50"
+                className={`flex items-center gap-2 bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a2e] transition-all disabled:opacity-50 ${isMobile ? 'w-full justify-center' : ''}`}
               >
                 {saving ? (
                   <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
                 ) : (
                   <FaSave className="w-4 h-4" />
                 )}
-                Guardar
+                <span className={isMobile ? 'text-sm' : ''}>Guardar</span>
               </button>
             </div>
 
-            <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'} gap-6`}>
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-6'}`}>
               
               {/* Información básica */}
-              <div className="space-y-4">
+              <div className={`space-y-4 ${isMobile ? 'space-y-6' : ''}`}>
                 <h3 className="text-lg font-bold text-gray-700 border-b border-gray-200 pb-2">Datos Básicos</h3>
                 
                 <div>
@@ -481,25 +561,34 @@ export default function Users() {
               </div>
 
               {/* Dirección */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-700 border-b border-gray-200 pb-2">Dirección de Entrega</h3>
+              <div className={`space-y-4 ${isMobile ? 'space-y-6' : ''}`}>
+                <h3 className={`font-bold text-gray-700 border-b border-gray-200 pb-2 ${isMobile ? 'text-base' : 'text-lg'}`}>Dirección de Entrega</h3>
                 
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Dirección *
                   </label>
-                  <input
-                    type="text"
-                    name="street"
-                    value={profileForm.street || ''}
-                    onChange={handleProfileChange}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                      !profileForm.street 
-                        ? 'border-orange-300 focus:ring-orange-500 bg-orange-50' 
-                        : 'border-gray-300 focus:ring-[#FF6B35] focus:border-transparent'
-                    }`}
-                    placeholder="Escribe tu dirección..."
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="street"
+                      value={profileForm.street || ''}
+                      onChange={handleProfileChange}
+                      className={`w-full p-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                        !profileForm.street 
+                          ? 'border-orange-300 focus:ring-orange-500 bg-orange-50' 
+                          : isValidAddress
+                          ? 'border-green-500 focus:ring-green-500 bg-green-50'
+                          : 'border-gray-300 focus:ring-[#FF6B35] focus:border-transparent'
+                      }`}
+                      placeholder="Escribe tu dirección..."
+                    />
+                    {isValidAddress && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <FaCheckCircle className="w-5 h-5 text-green-500" />
+                      </div>
+                    )}
+                  </div>
                   {!profileForm.street && (
                     <p className="text-orange-600 text-xs mt-1">Necesaria para realizar entregas</p>
                   )}
@@ -578,10 +667,18 @@ export default function Users() {
               <div className="mt-6">
                 <h3 className="text-lg font-bold text-gray-700 mb-4">Ubicación en el Mapa</h3>
                 <GoogleMapComponent 
-                  address={profileForm.street}
+                  address={validateAndFormatAddress(profileForm.street)}
                 />
+                <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium">
+                    📍 Dirección formateada: {validateAndFormatAddress(profileForm.street)}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Si la ubicación no es correcta, verifica que la dirección esté bien escrita.
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 mt-2">
-                  📍 Esta es una representación visual de tu dirección. Nuestro equipo confirmará la ubicación exacta al momento de la entrega.
+                  Esta es una representación visual de tu dirección. Nuestro equipo confirmará la ubicación exacta al momento de la entrega.
                 </p>
               </div>
             )}
