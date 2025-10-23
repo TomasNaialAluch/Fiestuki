@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useUI } from '../context/UIContext';
 
 export default function ItemMobile({ item }) {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { showAddedProductModal } = useUI();
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
     addToCart(item, 1);
+    showAddedProductModal(item, 1);
   };
 
   const handleOpenDetail = () => {

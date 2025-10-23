@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useUI } from '../context/UIContext';
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import ShippingInfo from './ShippingInfo';
@@ -17,6 +18,7 @@ export default function ItemDetail({
   onSelectImage,
 }) {
   const { cart, addToCart } = useCart();
+  const { showAddedProductModal } = useUI();
   const [error, setError] = useState('');
   const cartItem = cart.find(prod => prod.id === item.id);
   const alreadyInCart = cartItem ? cartItem.quantity : 0;
@@ -27,6 +29,7 @@ export default function ItemDetail({
       return;
     }
     addToCart(item, qty);
+    showAddedProductModal(item, qty);
     setError('');
   };
 

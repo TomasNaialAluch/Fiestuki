@@ -10,10 +10,14 @@ import Breadcrumb from './components/Breadcrumb';
 import SideCart from './components/SideCart'
 import SearchNotification from './components/SearchNotification'
 import NotificationToast from './components/NotificationToast'
+import AddedToCartModal from './components/AddedToCartModal'
 import { useCart } from './context/CartContext'
 import { useUI } from './context/UIContext'
 import Checkout from './pages/Checkout';
-import Users from './pages/Users'; // <--- AGREGÁ ESTA LÍNEA
+import Users from './pages/Users';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailure from './pages/PaymentFailure';
+import AdminPanel from './pages/AdminPanel';
 
 function NotFound() {
   return (
@@ -33,18 +37,24 @@ function CategoryWithBanner() {
 }
 
 function App() {
-  const { isSideCartOpen, setIsSideCartOpen } = useUI();
+  const { isSideCartOpen, setIsSideCartOpen, isNavBarHidden } = useUI();
 
   return (
     <>
       <NavBar />
-      <main className="pt-20 md:pt-52">
+      <main className={`transition-all duration-500 ${
+        isNavBarHidden ? 'pt-0' : 'pt-20 md:pt-52'
+      }`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryWithBanner />} />
           <Route path="/item/:itemId" element={<ItemDetailContainer />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/users" element={<Users />} /> {/* <-- AGREGÁ ESTA LÍNEA */}
+          <Route path="/users" element={<Users />} />
+          <Route path="/checkout/success" element={<PaymentSuccess />} />
+          <Route path="/checkout/failure" element={<PaymentFailure />} />
+          <Route path="/checkout/pending" element={<PaymentFailure />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -52,6 +62,7 @@ function App() {
       <SideCart open={isSideCartOpen} onClose={() => setIsSideCartOpen(false)} />
       <SearchNotification />
       <NotificationToast />
+      <AddedToCartModal />
     </>
   );
 }

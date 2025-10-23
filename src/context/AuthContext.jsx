@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const auth = getAuth();
 
@@ -39,7 +40,9 @@ export function AuthProvider({ children }) {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       
       if (userDoc.exists()) {
-        setUserProfile(userDoc.data());
+        const profileData = userDoc.data();
+        setUserProfile(profileData);
+        setIsAdmin(profileData.role === 'admin');
       } else {
         // Si no existe el documento, crearlo con datos básicos
         const newProfile = {
@@ -48,12 +51,13 @@ export function AuthProvider({ children }) {
           createdAt: new Date(),
           address: '',
           phone: '',
-          orderHistory: [], // Array de IDs de pedidos
-          role: 'user'
+          role: 'user', // Por defecto todos son usuarios normales
+          orderHistory: [] // Array de IDs de pedidos
         };
         
         await setDoc(doc(db, 'users', firebaseUser.uid), newProfile);
         setUserProfile(newProfile);
+        setIsAdmin(false); // Los nuevos usuarios no son admin por defecto
       }
     } catch (error) {
       console.error('Error al cargar perfil del usuario:', error);
@@ -84,8 +88,22 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await signOut(auth);
+      setIsAdmin(false);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  // Función para hacer admin a un usuario (solo para super admins)
+  const makeUserAdmin = async (userId) => {
+    try {
+      await setDoc(doc(db, 'users', userId), {
+        role: 'admin'
+      }, { merge: true });
+      return true;
+    } catch (error) {
+      console.error('Error al hacer admin al usuario:', error);
+      return false;
     }
   };
 
@@ -93,9 +111,11 @@ export function AuthProvider({ children }) {
     user,
     userProfile,
     loading,
+    isAdmin,
     updateUserProfile,
     addOrderToHistory,
-    logout
+    logout,
+    makeUserAdmin
   };
 
   return (

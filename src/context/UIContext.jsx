@@ -11,6 +11,8 @@ export function UIProvider({ children }) {
   const [isSideCartOpen, setIsSideCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [addedProduct, setAddedProduct] = useState(null); // Para el modal de producto agregado
+  const [isNavBarHidden, setIsNavBarHidden] = useState(false); // Para ocultar NavBar en checkout
 
   // Funciones para manejar notificaciones
   const addNotification = (message, type = 'info') => {
@@ -29,6 +31,15 @@ export function UIProvider({ children }) {
 
   const clearNotifications = () => setNotifications([]);
 
+  // Funciones para manejar el modal de producto agregado
+  const showAddedProductModal = (product, quantity) => {
+    setAddedProduct({ ...product, addedQuantity: quantity });
+  };
+
+  const hideAddedProductModal = () => {
+    setAddedProduct(null);
+  };
+
   return (
     <UIContext.Provider
       value={{
@@ -45,6 +56,15 @@ export function UIProvider({ children }) {
         addNotification,
         removeNotification,
         clearNotifications,
+
+        // Added product modal
+        addedProduct,
+        showAddedProductModal,
+        hideAddedProductModal,
+
+        // NavBar visibility
+        isNavBarHidden,
+        setIsNavBarHidden,
       }}
     >
       {children}

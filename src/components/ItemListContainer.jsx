@@ -9,13 +9,11 @@ export default function ItemListContainer({ greeting, categoryId }) {
   const { search } = useSearch();
 
   useEffect(() => {
-    console.log('🔥 CategoryId recibido:', categoryId);
     setLoading(true);
     
     const fetchData = categoryId ? getProductsByCategory(categoryId) : getProducts();
     
     fetchData.then((data) => {
-      console.log('🔥 Datos de Firebase:', data);
       setItems(data);
       setLoading(false);
     });

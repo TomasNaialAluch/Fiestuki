@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearch } from '../../context/SearchContext';
 import { useUI } from '../../context/UIContext';
+import { FaInstagram } from 'react-icons/fa';
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -250,46 +251,40 @@ const Footer = () => {
               gap: '15px',
               flexWrap: 'wrap'
             }}>
-              {[
-                { emoji: '📘', name: 'Facebook', color: '#1877f2' },
-                { emoji: '📷', name: 'Instagram', color: '#e4405f' },
-                { emoji: '🐦', name: 'Twitter', color: '#1da1f2' },
-                { emoji: '💬', name: 'WhatsApp', color: '#25d366' }
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  style={{
-                    display: 'inline-block',
-                    width: '45px',
-                    height: '45px',
-                    borderRadius: '50%',
-                    background: social.color,
-                    color: '#fff',
-                    textDecoration: 'none',
-                    fontSize: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
-                    opacity: 0.9
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-3px) scale(1.05)';
-                    e.target.style.boxShadow = '0 5px 15px rgba(0,0,0,0.25)';
-                    e.target.style.opacity = '1';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0) scale(1)';
-                    e.target.style.boxShadow = '0 3px 8px rgba(0,0,0,0.15)';
-                    e.target.style.opacity = '0.9';
-                  }}
-                  title={social.name}
-                >
-                  {social.emoji}
-                </a>
-              ))}
+              <a
+                href="https://instagram.com/fiestuki.tienda"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 18px',
+                  borderRadius: '25px',
+                  background: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
+                  opacity: 0.95
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
+                  e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.25)';
+                  e.currentTarget.style.opacity = '1';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 3px 8px rgba(0,0,0,0.15)';
+                  e.currentTarget.style.opacity = '0.95';
+                }}
+                title="Instagram - fiestuki.tienda"
+              >
+                <FaInstagram style={{ fontSize: '22px' }} />
+                <span>Fiestuki.tienda</span>
+              </a>
             </div>
           </div>
         </div>
@@ -322,30 +317,6 @@ const Footer = () => {
       </div>
 
       {/* Animaciones CSS */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-        
-        @media (max-width: 768px) {
-          footer {
-            padding: 40px 15px 20px !important;
-          }
-          
-          footer h2 {
-            font-size: 24px !important;
-          }
-          
-          footer h3 {
-            font-size: 16px !important;
-          }
-          
-          footer p, footer a {
-            font-size: 13px !important;
-          }
-        }
-      `}</style>
     </footer>
   );
 };

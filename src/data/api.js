@@ -59,7 +59,6 @@ export async function getProductById(id) {
         ...docSnap.data()
       };
     } else {
-      console.log('No se encontró el producto');
       return null;
     }
   } catch (error) {

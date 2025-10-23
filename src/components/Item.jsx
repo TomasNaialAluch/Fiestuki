@@ -3,16 +3,18 @@ import { Link } from 'react-router-dom';
 import { useDeviceDetection } from '../hooks/useDeviceDetection';
 import ItemMobile from './ItemMobile';
 import { useCart } from '../context/CartContext';
+import { useUI } from '../context/UIContext';
 import { useState } from 'react';
 
 export default function Item({ item }) {
   const { isMobile } = useDeviceDetection();
   const { addToCart, cart } = useCart();
+  const { showAddedProductModal } = useUI();
   const [error, setError] = useState('');
 
   // Si es mobile, pasa addToCart como prop
   if (isMobile) {
-    return <ItemMobile item={item} addToCart={addToCart} />;
+    return <ItemMobile item={item} />;
   }
 
   const cartItem = cart.find(prod => prod.id === item.id);
@@ -27,6 +29,7 @@ export default function Item({ item }) {
       return;
     }
     addToCart(item, qty);
+    showAddedProductModal(item, qty);
     setError('');
   };
 

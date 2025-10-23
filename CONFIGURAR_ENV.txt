@@ -1,0 +1,40 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║           INSTRUCCIONES PARA CONFIGURAR .env                      ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📁 UBICACIÓN: Archivo .env en la raíz del proyecto (ya existe pero está vacío)
+
+📝 CONTENIDO A COPIAR EN EL ARCHIVO .env:
+
+# MercadoPago Configuration - Fiestuki
+# Credenciales de PRODUCCIÓN (reales)
+
+# Clave pública (para el frontend)
+VITE_MERCADOPAGO_PUBLIC_KEY=APP_USR-53bddcd9-234b-4ab8-a423-c30d9451b565
+
+# Token de acceso (para crear preferencias de pago)
+VITE_MERCADOPAGO_ACCESS_TOKEN=APP_USR-2888577035332571-101315-06ab72ac1d2b28a2cd5ec9c4b01fa2a4-2923895219
+
+# URL del webhook para notificaciones (opcional)
+VITE_WEBHOOK_URL=https://fiestuki.com/api/mercadopago/webhook
+
+
+⚠️ IMPORTANTE:
+1. Abre el archivo .env con un editor de texto
+2. Copia y pega TODO el contenido de arriba
+3. Guarda el archivo
+4. Reinicia el servidor (Ctrl+C y npm run dev)
+
+✅ DESPUÉS DE CONFIGURAR:
+- El error "invalid_token" de MercadoPago desaparecerá
+- El botón de MercadoPago funcionará correctamente
+- Los pagos se procesarán en la cuenta de Melina
+
+🔒 SEGURIDAD:
+- NUNCA subas este archivo a GitHub
+- Ya está en .gitignore
+- Las credenciales son de PRODUCCIÓN (cobros reales)
+
+
+
+

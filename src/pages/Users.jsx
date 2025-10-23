@@ -50,18 +50,11 @@ export default function Users() {
   // Validar dirección existente cuando se carga el perfil
   useEffect(() => {
     if (profileForm.street && profileForm.street.length > 10) {
-      console.log('🔄 VALIDANDO DIRECCIÓN EXISTENTE:', profileForm.street);
-      
       const formattedAddress = validateAndFormatAddress(profileForm.street);
       if (formattedAddress) {
-        const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formattedAddress)}`;
-        console.log('🗺️ LINK DE GOOGLE MAPS (dirección existente):', googleMapsLink);
-        
         setIsValidAddress(true);
-        console.log('✅ DIRECCIÓN EXISTENTE VÁLIDA - Input debería mostrar verde');
       } else {
         setIsValidAddress(false);
-        console.log('❌ DIRECCIÓN EXISTENTE INVÁLIDA');
       }
     } else {
       setIsValidAddress(false);
@@ -85,36 +78,16 @@ export default function Users() {
 
   const handleProfileChange = e => {
     const { name, value } = e.target;
-    console.log('📝 INPUT CAMBIADO:', { name, value });
     setProfileForm({ ...profileForm, [name]: value });
 
-    // Si es el campo de dirección, generar link de Google Maps
+    // Si es el campo de dirección, validar
     if (name === 'street' && value.length > 3) {
-      console.log('🏠 Dirección ingresada:', value);
-      
-      // Generar link de Google Maps
       const formattedAddress = validateAndFormatAddress(value);
       if (formattedAddress) {
-        const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formattedAddress)}`;
-        console.log('🗺️ LINK DE GOOGLE MAPS:', googleMapsLink);
-        console.log('📍 Dirección formateada para el link:', formattedAddress);
-        
-        // También generar link directo para abrir en nueva pestaña
-        console.log('🔗 Para abrir en nueva pestaña, usa:');
-        console.log(`window.open('${googleMapsLink}', '_blank')`);
-        
-        // Validar que la dirección sea válida (más de 10 caracteres)
         const isValid = value.trim().length >= 10;
         setIsValidAddress(isValid);
-        
-        if (isValid) {
-          console.log('✅ DIRECCIÓN VÁLIDA - Input debería mostrar verde');
-        } else {
-          console.log('⚠️ DIRECCIÓN MUY CORTA - Input debería mostrar naranja');
-        }
       } else {
         setIsValidAddress(false);
-        console.log('❌ DIRECCIÓN INVÁLIDA - Input debería mostrar rojo');
       }
       
       searchAddressSuggestions(value);
@@ -124,16 +97,12 @@ export default function Users() {
   };
 
   const validateAndFormatAddress = (address) => {
-    console.log('🔍 VALIDANDO DIRECCIÓN:', address);
-    
     if (!address || address.trim().length < 5) {
-      console.log('❌ Dirección muy corta o vacía');
       return null;
     }
 
     // Formatear la dirección para Google Maps
     let formattedAddress = address.trim();
-    console.log('📍 Dirección original:', formattedAddress);
     
     // Agregar "Argentina" si no está presente
     if (!formattedAddress.toLowerCase().includes('argentina')) {
@@ -147,7 +116,6 @@ export default function Users() {
       formattedAddress += ', Buenos Aires';
     }
 
-    console.log('✅ Dirección formateada:', formattedAddress);
     return formattedAddress;
   };
 
