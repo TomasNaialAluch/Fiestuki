@@ -36,6 +36,137 @@ export default function ProductForm({ product = null, onClose, onSuccess }) {
     }));
   };
 
+  // Manejar pegado desde Word/rich text preservando formato
+  const handlePasteDescription = (e) => {
+    e.preventDefault();
+    
+    // Obtener datos del clipboard
+    const clipboardData = e.clipboardData || window.clipboardData;
+    const htmlData = clipboardData.getData('text/html');
+    const plainData = clipboardData.getData('text/plain');
+    
+    let cleanedText = '';
+    
+    // Si hay HTML, procesarlo para preservar listas y formato
+    if (htmlData) {
+      // Crear un elemento temporal para parsear HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlData;
+      
+      // Función recursiva para procesar nodos y preservar formato
+      const processNode = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return node.textContent;
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tagName = node.tagName?.toLowerCase();
+          
+          // Si es un elemento de lista (ul/ol)
+          if (tagName === 'ul' || tagName === 'ol') {
+            const listItems = Array.from(node.querySelectorAll(':scope > li'));
+            if (listItems.length === 0) {
+              // Si no hay li directos, buscar en todos los niveles
+              const allLis = Array.from(node.querySelectorAll('li'));
+              return allLis.map((li) => {
+                const itemText = processNode(li).trim();
+                // Convertir a bullet points solo si no empieza ya con uno
+                return itemText.match(/^[•·▪▫-]\s/) ? itemText : `• ${itemText}`;
+              }).join('\n') + '\n';
+            }
+            return listItems.map((li) => {
+              const itemText = processNode(li).trim();
+              // Mantener bullet si ya existe, sino agregar
+              return itemText.match(/^[•·▪▫-]\s/) ? itemText : `• ${itemText}`;
+            }).join('\n') + '\n';
+          }
+          
+          // Si es un elemento de lista individual
+          if (tagName === 'li') {
+            const children = Array.from(node.childNodes);
+            const content = children.map(processNode).join('').trim();
+            // Si ya tiene bullet al inicio, mantenerlo
+            return content;
+          }
+          
+          // Si es un salto de línea (br)
+          if (tagName === 'br') {
+            return '\n';
+          }
+          
+          // Si es un párrafo (p) o div, agregar salto de línea después
+          if (tagName === 'p' || tagName === 'div') {
+            const children = Array.from(node.childNodes);
+            const content = children.map(processNode).join('').trim();
+            return content ? content + '\n' : '';
+          }
+          
+          // Para otros elementos, procesar sus hijos
+          const children = Array.from(node.childNodes);
+          return children.map(processNode).join('');
+        }
+        
+        return '';
+      };
+      
+      cleanedText = processNode(tempDiv);
+      
+      // Normalizar diferentes tipos de bullets a uno estándar
+      cleanedText = cleanedText
+        .replace(/^[·▪▫-]\s+/gm, '• ')  // Convertir otros bullets a • 
+        .replace(/\u2022/g, '•')         // Unicode bullet
+        .replace(/\u25CF/g, '•')         // Black circle
+        .replace(/\u25E6/g, '•');        // White bullet
+      
+      // Limpiar múltiples saltos de línea seguidos (máximo 2)
+      cleanedText = cleanedText.replace(/\n{3,}/g, '\n\n');
+      
+      // Limpiar espacios al inicio y final de cada línea, pero mantener bullets
+      cleanedText = cleanedText.split('\n').map(line => {
+        const trimmed = line.trim();
+        // Si la línea empieza con bullet, mantenerlo
+        if (trimmed.match(/^[•·▪▫-]/)) {
+          return trimmed;
+        }
+        return trimmed;
+      }).join('\n');
+      
+    } else if (plainData) {
+      // Si es solo texto plano, también procesar bullets
+      cleanedText = plainData
+        .replace(/^[·▪▫-]\s+/gm, '• ')
+        .replace(/\u2022/g, '•')
+        .replace(/\u25CF/g, '•')
+        .replace(/\u25E6/g, '•');
+    }
+    
+    // Insertar el texto en la posición del cursor
+    const textarea = e.target;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = formData.description;
+    
+    // No hacer trim() completo para no perder saltos de línea finales
+    const textToInsert = cleanedText.trimEnd();
+    
+    const newValue = 
+      currentValue.substring(0, start) + 
+      textToInsert + 
+      currentValue.substring(end);
+    
+    setFormData(prev => ({
+      ...prev,
+      description: newValue
+    }));
+    
+    // Restaurar posición del cursor después del texto pegado
+    setTimeout(() => {
+      const newPosition = start + textToInsert.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+      textarea.focus();
+    }, 0);
+  };
+
   const handleImageUpload = async (files) => {
     if (!files || files.length === 0) return;
 
@@ -292,8 +423,10 @@ export default function ProductForm({ product = null, onClose, onSuccess }) {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows="4"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent"
+                  onPaste={handlePasteDescription}
+                  rows="6"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent font-mono text-sm whitespace-pre-wrap"
+                  placeholder="Puedes pegar texto desde Word y se mantendrán las listas y saltos de línea..."
                 />
               </div>
             </div>

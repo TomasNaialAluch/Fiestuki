@@ -4,11 +4,17 @@ import { useUI } from '../context/UIContext';
 
 export default function ItemMobile({ item }) {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   const { showAddedProductModal } = useUI();
+  
+  const cartItem = cart.find(prod => prod.id === item.id);
+  const alreadyInCart = cartItem ? cartItem.quantity : 0;
+  const stock = item.stock ?? 0;
+  const isOutOfStock = stock === 0 || stock - alreadyInCart <= 0;
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
+    if (isOutOfStock) return;
     addToCart(item, 1);
     showAddedProductModal(item, 1);
   };
@@ -24,10 +30,17 @@ export default function ItemMobile({ item }) {
     >
       {/* Imagen del producto - Lado izquierdo */}
       <div className="relative flex-1 bg-[#F0E8D8] p-2">
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-black bg-opacity-60 z-10 flex items-center justify-center rounded-lg">
+            <div className="bg-red-600 text-white px-2 py-1 rounded font-bold font-baloo text-xs">
+              AGOTADO
+            </div>
+          </div>
+        )}
         <img 
           src={item.mainImage || item.images?.[0] || item.imagen} 
           alt={item.name || item.nombre} 
-          className="w-full h-24 object-cover rounded-lg" 
+          className={`w-full h-24 object-cover rounded-lg ${isOutOfStock ? 'opacity-50' : ''}`}
         />
         {/* Categoría sobre la imagen */}
         <div className="absolute bottom-1 right-1 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo">
@@ -53,9 +66,14 @@ export default function ItemMobile({ item }) {
         {/* Botón Agregar al carrito */}
         <button 
           onClick={handleAddToCart}
-          className="w-full bg-[#F0AB7A] text-white font-bold py-2 px-2 rounded-lg hover:bg-[#E55A31] transition-colors duration-200 shadow-sm font-baloo text-sm"
+          disabled={isOutOfStock}
+          className={`w-full font-bold py-2 px-2 rounded-lg transition-colors duration-200 shadow-sm font-baloo text-sm ${
+            isOutOfStock 
+              ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+              : 'bg-[#F0AB7A] text-white hover:bg-[#E55A31]'
+          }`}
         >
-          🛒 +
+          {isOutOfStock ? '❌' : '🛒 +'}
         </button>
       </div>
     </div>

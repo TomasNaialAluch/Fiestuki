@@ -1,4 +1,6 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import WhatsappFAB from './components/WhatsappFAB.jsx';
 import { Routes, Route, useParams } from 'react-router-dom';
 import NavBar from './layout/Header/components/NavBar/NavBar.jsx';
 import HomePage from './pages/HomePage';
@@ -18,6 +20,7 @@ import Users from './pages/Users';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailure from './pages/PaymentFailure';
 import AdminPanel from './pages/AdminPanel';
+import SearchPage from './pages/SearchPage';
 
 function NotFound() {
   return (
@@ -37,13 +40,21 @@ function CategoryWithBanner() {
 }
 
 function App() {
-  const { isSideCartOpen, setIsSideCartOpen, isNavBarHidden } = useUI();
+  const { isSideCartOpen, setIsSideCartOpen, isNavBarHidden, isNavBarScrolled } = useUI();
+  const location = useLocation();
+  const isCheckout = location.pathname.startsWith('/checkout');
 
   return (
     <>
       <NavBar />
-      <main className={`transition-all duration-500 ${
-        isNavBarHidden ? 'pt-0' : 'pt-20 md:pt-52'
+      <main className={`transition-all duration-300 ${
+        isCheckout 
+          ? 'pt-0 md:pt-20' 
+          : (isNavBarHidden 
+              ? 'pt-0' 
+              : isNavBarScrolled 
+                ? 'pt-20 md:pt-20' 
+                : 'pt-20 md:pt-52')
       }`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -51,6 +62,7 @@ function App() {
           <Route path="/item/:itemId" element={<ItemDetailContainer />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/checkout/success" element={<PaymentSuccess />} />
           <Route path="/checkout/failure" element={<PaymentFailure />} />
           <Route path="/checkout/pending" element={<PaymentFailure />} />
@@ -59,6 +71,10 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      {/* FAB de WhatsApp - oculto en checkout, users y admin */}
+      {!(isCheckout || location.pathname.startsWith('/users') || location.pathname.startsWith('/admin')) && (
+        <WhatsappFAB />
+      )}
       <SideCart open={isSideCartOpen} onClose={() => setIsSideCartOpen(false)} />
       <SearchNotification />
       <NotificationToast />

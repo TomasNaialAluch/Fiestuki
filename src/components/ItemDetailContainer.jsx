@@ -46,7 +46,26 @@ export default function ItemDetailContainer() {
   };
 
   // Galería de imágenes
-  const allImages = item.images || item.imagenes || [item.mainImage || item.imagen];
+  // Manejar diferentes formatos: array de objetos {url} o array de strings
+  let allImages = [];
+  if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+    // Si es array de objetos, extraer URLs
+    allImages = item.images.map(img => 
+      typeof img === 'string' ? img : (img.url || img)
+    ).filter(Boolean); // Filtrar valores falsos
+  } else if (item.imagenes && Array.isArray(item.imagenes) && item.imagenes.length > 0) {
+    allImages = item.imagenes.map(img => 
+      typeof img === 'string' ? img : (img.url || img)
+    ).filter(Boolean);
+  }
+  
+  // Si hay mainImage, agregarlo al inicio si no está ya en el array
+  const mainImageUrl = item.mainImage || item.imagen;
+  if (mainImageUrl && !allImages.includes(mainImageUrl)) {
+    allImages = [mainImageUrl, ...allImages];
+  } else if (allImages.length === 0 && mainImageUrl) {
+    allImages = [mainImageUrl];
+  }
 
   const handlePrevImage = (e) => {
     if (e) e.stopPropagation();

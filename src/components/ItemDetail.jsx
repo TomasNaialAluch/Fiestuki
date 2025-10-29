@@ -4,7 +4,6 @@ import { useUI } from '../context/UIContext';
 import ProductGallery from './ProductGallery';
 import ProductInfo from './ProductInfo';
 import ShippingInfo from './ShippingInfo';
-import PaymentMethods from './PaymentMethods';
 
 export default function ItemDetail({
   item,
@@ -58,8 +57,6 @@ export default function ItemDetail({
         />
 
         <ShippingInfo />
-
-        <PaymentMethods />
       </div>
     </div>
   );

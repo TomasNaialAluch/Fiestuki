@@ -13,6 +13,7 @@ export function UIProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [addedProduct, setAddedProduct] = useState(null); // Para el modal de producto agregado
   const [isNavBarHidden, setIsNavBarHidden] = useState(false); // Para ocultar NavBar en checkout
+  const [isNavBarScrolled, setIsNavBarScrolled] = useState(false); // Para reducir NavBar cuando hay scroll
 
   // Funciones para manejar notificaciones
   const addNotification = (message, type = 'info') => {
@@ -65,6 +66,10 @@ export function UIProvider({ children }) {
         // NavBar visibility
         isNavBarHidden,
         setIsNavBarHidden,
+        
+        // NavBar scroll state
+        isNavBarScrolled,
+        setIsNavBarScrolled,
       }}
     >
       {children}

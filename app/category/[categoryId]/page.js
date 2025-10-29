@@ -14,13 +14,17 @@ import { useUI } from '../../../src/context/UIContext'
 
 export default function CategoryPage() {
   const { categoryId } = useParams()
-  const { isSideCartOpen, setIsSideCartOpen, isNavBarHidden } = useUI()
+  const { isSideCartOpen, setIsSideCartOpen, isNavBarHidden, isNavBarScrolled } = useUI()
 
   return (
     <>
       <NavBar />
-      <main className={`transition-all duration-500 ${
-        isNavBarHidden ? 'pt-0' : 'pt-20 md:pt-52'
+      <main className={`transition-all duration-300 ${
+        isNavBarHidden 
+          ? 'pt-0' 
+          : isNavBarScrolled 
+            ? 'pt-20 md:pt-20' 
+            : 'pt-20 md:pt-52'
       }`}>
         <Breadcrumb categoryId={categoryId} />
         <CategoryBanner categoryId={categoryId} />

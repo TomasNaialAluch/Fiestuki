@@ -12,16 +12,39 @@ const desktopBanners = import.meta.glob("../assets/banners/desktop/*.{png,jpg,jp
   as: "url",
 })
 
-export default function HomeBanners() {
+export default function HomeBanners({ categoryButtonsSlot }) {
+  // Filtrar la imagen que no queremos mostrar
+  const filteredMobileBanners = Object.entries(mobileBanners).filter(([path]) => 
+    !path.includes('sin boton')
+  );
+  
+  const mobileBannersArray = Object.values(Object.fromEntries(filteredMobileBanners));
+  const firstMobileBanner = mobileBannersArray[0];
+  const restMobileBanners = mobileBannersArray.slice(1);
+  
   return (
     <>
       {/* Mobile */}
       <div className="block md:hidden">
-        {Object.values(mobileBanners).map((src, i) => (
+        {/* Primera imagen */}
+        {firstMobileBanner && (
           <img
-            key={`mobile-${i}`}
+            key="mobile-0"
+            src={firstMobileBanner}
+            alt="Mobile Banner 1"
+            className="w-full block"
+          />
+        )}
+        
+        {/* Botones de categoría (slot) */}
+        {categoryButtonsSlot}
+        
+        {/* Resto de imágenes */}
+        {restMobileBanners.map((src, i) => (
+          <img
+            key={`mobile-${i + 1}`}
             src={src}
-            alt={`Mobile Banner ${i + 1}`}
+            alt={`Mobile Banner ${i + 2}`}
             className="w-full block"
           />
         ))}

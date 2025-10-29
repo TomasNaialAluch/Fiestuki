@@ -5,25 +5,17 @@ import HomeBanners from '../components/HomeBanners'
 export default function HomePage() {
   return (
     <>
-      <div
-        style={{
-          background: '#faf4e4',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '120px',
-          fontFamily: "'Baloo 2', Inter, sans-serif",
-          fontWeight: 800,
-          fontSize: 28,
-          color: '#3E3E3E',
-          textAlign: 'center',
-          borderRadius: '16px'
-        }}
-      >
-        ¡Bienvenido a Fiestuki!
+      {/* Desktop: botones arriba */}
+      <div className="hidden md:block">
+        <CategoryButtons />
       </div>
-      <CategoryButtons />
-      <HomeBanners />
+      
+      {/* Mobile: botones dentro del componente de banners (después de primera imagen) */}
+      <HomeBanners categoryButtonsSlot={
+        <div className="block md:hidden">
+          <CategoryButtons />
+        </div>
+      } />
     </>
   )
 }

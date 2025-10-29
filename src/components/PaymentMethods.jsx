@@ -22,7 +22,7 @@ const PaymentMethods = () => {
         gap: '10px',
         flexWrap: 'wrap'
       }}>
-        {['💳 Visa', '💳 Mastercard', '💰 Efectivo'].map((method, index) => (
+        {['💰 Transferencia', '💳 Mercado Pago'].map((method, index) => (
           <span key={index} style={{
             background: '#fff',
             padding: '5px 12px',

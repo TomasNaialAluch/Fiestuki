@@ -28,8 +28,33 @@ const ProductInfo = ({ item, quantity, setQuantity, onAddToCart, error }) => {
         </div>
       </div>
 
-      {/* AQUÍ SE AGREGA EL COMPONENTE DE MÉTODOS DE PAGO */}
+      {/* Métodos de pago */}
       <PaymentMethods />
+
+      {/* Descripción del producto */}
+      {(item.description || item.descripcion) && (
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{
+            fontSize: '18px',
+            fontWeight: 700,
+            color: '#333',
+            marginBottom: '10px'
+          }}>
+            Descripción
+          </div>
+          <div style={{
+            background: '#ffffff',
+            border: '2px solid #e0e0e0',
+            borderRadius: '12px',
+            padding: '14px 16px',
+            color: '#444',
+            lineHeight: 1.6,
+            whiteSpace: 'pre-wrap'
+          }}>
+            {item.description || item.descripcion}
+          </div>
+        </div>
+      )}
 
       {/* Cantidad */}
       <div style={{ marginBottom: '30px' }}>

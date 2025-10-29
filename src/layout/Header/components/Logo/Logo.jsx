@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoDesktop from '../../../../assets/logo/Logo tuki-03.png';
 import logoMobile from '../../../../assets/logo/Logo tuki-04.png';
 
-export const Logo = ({ size = 'medium' }) => {
+export const Logo = ({ size = 'medium', isScrolled = false }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -61,11 +61,15 @@ export const Logo = ({ size = 'medium' }) => {
 
   return (
     <Link to="/" onClick={handleLogoClick}>
+      {/* Logo Desktop: cambia de tuki-03 a tuki-04 cuando hay scroll */}
       <img
-        src={logoDesktop}
+        src={isScrolled ? logoMobile : logoDesktop}
         alt="Fiestuki logo"
-        className="hidden md:block h-48 object-contain mx-auto transition-all duration-200 hover:opacity-90 hover:scale-105"
+        className={`hidden md:block object-contain mx-auto transition-all duration-300 hover:opacity-90 hover:scale-105 ${
+          isScrolled ? 'h-28' : 'h-48'
+        }`}
       />
+      {/* Logo Mobile: siempre usa tuki-04 sin cambios */}
       <img
         src={logoMobile}
         alt="Fiestuki logo"

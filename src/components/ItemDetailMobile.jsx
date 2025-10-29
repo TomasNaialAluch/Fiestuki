@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PaymentMethods from './PaymentMethods.jsx';
 import { useCart } from '../context/CartContext';
+import { useUI } from '../context/UIContext';
 
 const ItemDetailMobile = ({ 
   item, 
@@ -15,6 +16,7 @@ const ItemDetailMobile = ({
 }) => {
   const formatPrice = (price) => price?.toLocaleString();
   const { cart } = useCart();
+  const { showAddedProductModal } = useUI();
   const [error, setError] = useState('');
 
   // Calcular cuántos ya hay en el carrito
@@ -30,6 +32,8 @@ const ItemDetailMobile = ({
     }
     setError('');
     onAddToCart(qty);
+    // Mostrar modal de agregado al carrito
+    showAddedProductModal(item, qty);
   };
 
   return (
@@ -131,6 +135,32 @@ const ItemDetailMobile = ({
         </div>
 
         <PaymentMethods />
+
+        {/* Descripción del producto */}
+        {(item.description || item.descripcion) && (
+          <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+            <div style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#333',
+              marginBottom: '10px'
+            }}>
+              Descripción
+            </div>
+            <div style={{
+              background: '#f8f9fa',
+              border: '2px solid #e0e0e0',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              color: '#444',
+              lineHeight: 1.6,
+              whiteSpace: 'pre-wrap',
+              fontSize: '15px'
+            }}>
+              {item.description || item.descripcion}
+            </div>
+          </div>
+        )}
 
         {/* Controles de cantidad */}
         <div style={{
