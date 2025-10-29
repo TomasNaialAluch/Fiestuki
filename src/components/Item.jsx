@@ -43,20 +43,22 @@ export default function Item({ item }) {
   return (
     <Link to={`/item/${item.id}`} className="block">
       <div className="bg-[#FAF4E4] rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-        {/* Imagen del producto */}
-        <div className="relative overflow-hidden bg-[#F0E8D8] p-3">
-          {isOutOfStock && (
-            <div className="absolute inset-0 bg-black bg-opacity-60 z-10 flex items-center justify-center rounded-lg">
-              <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold font-baloo text-lg">
-                AGOTADO
+        {/* Imagen del producto (más alta en desktop, aspecto 4:3) */}
+        <div className="relative bg-[#F0E8D8] p-3">
+          <div className="w-full overflow-hidden rounded-lg h-28 md:h-auto md:aspect-[4/3] relative">
+            {isOutOfStock && (
+              <div className="absolute inset-0 bg-black bg-opacity-60 z-10 flex items-center justify-center">
+                <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold font-baloo text-lg">
+                  AGOTADO
+                </div>
               </div>
-            </div>
-          )}
-          <img 
-            src={item.mainImage || item.images?.[0] || item.imagen} 
-            alt={item.name || item.nombre} 
-            className={`w-full h-28 object-cover rounded-lg ${isOutOfStock ? 'opacity-50' : ''}`}
-          />
+            )}
+            <img 
+              src={item.mainImage || item.images?.[0] || item.imagen} 
+              alt={item.name || item.nombre} 
+              className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-50' : ''}`}
+            />
+          </div>
           <div className="absolute bottom-2 right-2 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo">
             {item.category || item.categoria}
           </div>

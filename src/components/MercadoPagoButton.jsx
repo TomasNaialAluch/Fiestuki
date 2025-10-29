@@ -6,23 +6,39 @@ export default function MercadoPagoButton({ orderData, onPaymentInitiated, onErr
   const [loading, setLoading] = useState(false);
 
   const handleMercadoPagoPayment = async () => {
+    console.log('🔘 Click en botón MercadoPago');
     setLoading(true);
     
     try {
+      if (!orderData) {
+        console.error('❌ orderData es null/undefined');
+        onError?.('Error: No hay datos de orden');
+        setLoading(false);
+        return;
+      }
+
+      console.log('📝 orderData recibido:', {
+        items: orderData.items?.length || 0,
+        buyer: orderData.buyer?.email || 'sin email'
+      });
+
       // Crear preferencia de pago
       const result = await createPaymentPreference(orderData);
+      console.log('📋 Resultado:', result);
       
       if (result.success) {
+        console.log('✅ Redirigiendo a MercadoPago...');
         onPaymentInitiated?.(result.preferenceId);
         
         // Redirigir a MercadoPago
         window.location.href = result.initPoint;
       } else {
-        onError?.(result.error);
+        console.error('❌ Error en result:', result.error);
+        onError?.(result.error || 'Error al crear la preferencia de pago');
       }
     } catch (error) {
-      console.error('Error procesando pago MercadoPago:', error);
-      onError?.('Error al procesar el pago. Intentalo de nuevo.');
+      console.error('❌ Error procesando pago MercadoPago:', error);
+      onError?.(error.message || 'Error al procesar el pago. Intentalo de nuevo.');
     } finally {
       setLoading(false);
     }
