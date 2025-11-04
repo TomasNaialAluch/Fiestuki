@@ -18,48 +18,39 @@ export const createPaymentPreference = async (orderData) => {
 
     // Verificar token
     const accessToken = import.meta.env.VITE_MERCADOPAGO_ACCESS_TOKEN;
-    console.log('🔍 MercadoPago - Verificando token:', {
-      existe: !!accessToken,
-      tipo: accessToken?.startsWith('TEST-') ? 'TEST' : accessToken?.startsWith('APP_USR-') ? 'PRODUCCIÓN' : 'DESCONOCIDO',
-      primerosChars: accessToken?.substring(0, 20) || 'NO HAY TOKEN'
-    });
 
     if (!accessToken) {
       console.error('❌ ERROR: No hay ACCESS_TOKEN configurado');
       throw new Error('ACCESS_TOKEN de MercadoPago no configurado');
     }
 
-    console.log('📦 Creando preferencia con datos:', {
-      items: orderData.items.length,
-      buyerEmail: orderData.buyer.email,
-      total: orderData.items.reduce((sum, item) => sum + (item.price || item.precio) * item.quantity, 0)
-    });
+    /* no-op */
 
-    // Preparar items validando que unit_price sea número
+    // Preparar items con normalización estricta (mínimos campos requeridos)
     const items = orderData.items.map(item => {
-      const price = typeof (item.price || item.precio) === 'number' 
-        ? (item.price || item.precio) 
-        : parseFloat(item.price || item.precio || 0);
-      
-      if (isNaN(price) || price <= 0) {
+      const rawPrice = (item.price ?? item.precio ?? 0);
+      const numericPrice = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(',', '.'));
+      const unitPrice = Number(Number.isFinite(numericPrice) ? numericPrice.toFixed(2) : 0);
+
+      if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
         throw new Error(`Precio inválido para el producto: ${item.name || item.nombre}`);
       }
 
+      const quantity = Math.max(1, parseInt(item.quantity || 1, 10));
+
       return {
-        id: String(item.id || Date.now()),
-        title: String(item.name || item.nombre).substring(0, 256), // MercadoPago limita a 256 caracteres
-        description: String(`Producto de Fiestuki - ${item.name || item.nombre}`).substring(0, 500),
-        quantity: parseInt(item.quantity || 1),
-        unit_price: price,
-        currency_id: 'ARS',
+        title: String(item.name || item.nombre || 'Producto Fiestuki').substring(0, 256),
+        quantity,
+        unit_price: unitPrice,
+        currency_id: 'ARS'
       };
     });
 
     const body = {
       items: items,
       
+      // Payer mínimo (solo email para evitar validaciones extra)
       payer: {
-        name: String(orderData.buyer.nombre || '').substring(0, 256),
         email: String(orderData.buyer.email || '').substring(0, 256)
       },
       
@@ -70,6 +61,14 @@ export const createPaymentPreference = async (orderData) => {
       },
       
       auto_return: 'approved',
+      purpose: 'wallet_purchase',
+      statement_descriptor: 'FIESTUKI',
+      payment_methods: {
+        excluded_payment_types: [],
+        excluded_payment_methods: [],
+        installments: 1
+      },
+      binary_mode: true,
       
       external_reference: String(orderData.orderId || `FIESTUKI_${Date.now()}`).substring(0, 256)
     };
@@ -80,16 +79,17 @@ export const createPaymentPreference = async (orderData) => {
       body.notification_url = webhookUrl;
     }
     
-    // Metadata solo si hay datos
-    if (orderData.orderId || orderData.buyer.email || orderData.buyer.telefono) {
-      body.metadata = {};
-      if (orderData.orderId) body.metadata.order_id = String(orderData.orderId).substring(0, 256);
-      if (orderData.buyer.email) body.metadata.customer_email = String(orderData.buyer.email).substring(0, 256);
-      if (orderData.buyer.telefono) body.metadata.customer_phone = String(orderData.buyer.telefono).substring(0, 256);
+    // Metadata opcional y segura
+    const meta = {};
+    if (orderData.orderId) meta.order_id = String(orderData.orderId).substring(0, 256);
+    if (orderData.buyer?.email) meta.customer_email = String(orderData.buyer.email).substring(0, 256);
+    if (orderData.buyer?.telefono) meta.customer_phone = String(orderData.buyer.telefono).substring(0, 64);
+    if (Object.keys(meta).length > 0) {
+      body.metadata = meta;
     }
 
     // Crear preferencia usando fetch directamente
-    console.log('🚀 Enviando request a MercadoPago API...');
+    /* no-op */
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
@@ -99,17 +99,11 @@ export const createPaymentPreference = async (orderData) => {
       body: JSON.stringify(body)
     });
 
-    console.log('📡 Response status:', response.status, response.statusText);
+    /* no-op */
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('❌ ERROR COMPLETO de MercadoPago:', {
-        status: response.status,
-        statusText: response.statusText,
-        errorData: errorData,
-        errors: errorData.errors || [],
-        cause: errorData.cause || []
-      });
+      /* no-op */
       
       let errorMessage = errorData.message || response.statusText;
       if (errorData.errors && errorData.errors.length > 0) {
@@ -120,10 +114,7 @@ export const createPaymentPreference = async (orderData) => {
     }
 
     const preference = await response.json();
-    console.log('✅ Preferencia creada exitosamente:', {
-      id: preference.id,
-      initPoint: preference.init_point?.substring(0, 60) + '...'
-    });
+    /* no-op */
     
     return {
       success: true,

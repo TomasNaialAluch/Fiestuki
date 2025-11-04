@@ -3,11 +3,11 @@ import { FaBars } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom';
 
 const categorias = [
-  { id: 'cumple', nombre: 'Cumpleaños', color: '#FF5722' },
-  { id: 'despedida', nombre: 'Despedida de soltera', color: '#FFC107' },
-  { id: 'baby', nombre: 'Baby Shower', color: '#4CAF50' },
+  { id: 'cumpleaños', nombre: 'Cumpleaños', color: '#FF5722' },
+  { id: 'despedida', nombre: 'Despedida de Soltera', color: '#FFC107' },
+  { id: 'baby-shower', nombre: 'Baby Shower', color: '#4CAF50' },
   { id: 'religion', nombre: 'Religión', color: '#F48FB1' },
-  { id: 'fiestas', nombre: 'Fiestas Patrias', color: '#1976D2' },
+  { id: 'fiestas-patrias', nombre: 'Fiestas Patrias', color: '#1976D2' },
 ];
 
 export default function HamburgerMenu({ showMobileSearch, toggleMobileSearch }) {
@@ -33,25 +33,32 @@ export default function HamburgerMenu({ showMobileSearch, toggleMobileSearch }) 
       </button>
 
       {/* Overlay oscuro */}
-      <div
-        className={`fixed inset-0 bg-black z-20 transition-opacity duration-300 ease-in-out ${
-          open ? 'bg-opacity-30 pointer-events-auto opacity-100' : 'bg-opacity-0 pointer-events-none opacity-0'
-        }`}
-        onClick={handleClose}
-      />
+      {open && (
+        <div
+          className="fixed inset-0 bg-black transition-opacity duration-300 ease-in-out bg-opacity-30"
+          style={{ 
+            zIndex: 99998,
+            pointerEvents: 'auto'
+          }}
+          onClick={handleClose}
+        />
+      )}
 
       {/* Panel lateral del menú */}
       <div
-        className={`fixed top-0 bottom-0 left-0 w-64 h-screen bg-[#FAF4E4] z-[100] transition-all duration-500 ease-in-out
+        className={`fixed top-0 bottom-0 left-0 w-64 h-screen bg-[#FAF4E4] transition-all duration-500 ease-in-out
           ${open ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}
         `}
         style={{ 
           boxShadow: open ? '2px 0 16px rgba(0,0,0,0.10)' : 'none',
           overflowY: 'auto',
-          height: '100vh'
+          height: '100vh',
+          zIndex: 99999,
+          position: 'fixed',
+          isolation: 'isolate'
         }}
       >
-        <div className="p-6 pt-4">
+        <div className="p-6 pt-4" style={{ position: 'relative', zIndex: 1 }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <span

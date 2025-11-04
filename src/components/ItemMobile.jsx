@@ -31,19 +31,22 @@ export default function ItemMobile({ item }) {
       {/* Imagen del producto - Lado izquierdo */}
       <div className="relative flex-1 bg-[#F0E8D8] p-2">
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black bg-opacity-60 z-10 flex items-center justify-center rounded-lg">
-            <div className="bg-red-600 text-white px-2 py-1 rounded font-bold font-baloo text-xs">
-              AGOTADO
-            </div>
-          </div>
+          <div className="absolute inset-0 bg-black bg-opacity-60 z-0 rounded-lg"></div>
         )}
         <img 
           src={item.mainImage || item.images?.[0] || item.imagen} 
           alt={item.name || item.nombre} 
           className={`w-full h-24 object-cover rounded-lg ${isOutOfStock ? 'opacity-50' : ''}`}
         />
+        {isOutOfStock && (
+          <div className="absolute inset-0 flex items-center justify-center z-1 pointer-events-none">
+            <div className="bg-[#DC2626] text-white px-2 py-1 rounded font-bold font-baloo text-xs">
+              AGOTADO
+            </div>
+          </div>
+        )}
         {/* Categoría sobre la imagen */}
-        <div className="absolute bottom-1 right-1 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo">
+        <div className="absolute bottom-1 right-1 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo z-1">
           {item.category || item.categoria}
         </div>
       </div>

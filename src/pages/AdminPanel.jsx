@@ -1,8 +1,9 @@
 // src/pages/AdminPanel.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { collection, getDocs, query, orderBy, where, doc, deleteDoc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
+import { db, storage } from '../services/firebase';
 import { FaShoppingBag, FaBox, FaUser, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import ProductForm from '../components/ProductForm';
 
@@ -14,6 +15,9 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Verificar si es admin
   if (!isAdmin) {
@@ -97,6 +101,53 @@ export default function AdminPanel() {
       style: 'currency',
       currency: 'ARS'
     }).format(price);
+  };
+
+  const handleDeleteProduct = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    setDeleting(true);
+    try {
+      // Eliminar imágenes del storage
+      const images = productToDelete.images || [];
+      for (const image of images) {
+        if (image.ref) {
+          try {
+            const imageRef = ref(storage, image.ref);
+            await deleteObject(imageRef);
+          } catch (error) {
+            // Si falla la eliminación de una imagen, continuar con las demás
+            console.warn('Error eliminando imagen:', image.ref, error);
+          }
+        }
+      }
+
+      // Eliminar producto de Firestore
+      await deleteDoc(doc(db, 'products', productToDelete.id));
+      
+      // Recargar productos
+      await loadProducts();
+
+      // Cerrar modal
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+
+    } catch (error) {
+      console.error('Error eliminando producto:', error);
+      alert('Error eliminando el producto. Por favor, intenta de nuevo.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
   };
 
   return (
@@ -286,7 +337,10 @@ export default function AdminPanel() {
                               <FaEdit className="w-4 h-4" />
                               Editar
                             </button>
-                            <button className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                            <button 
+                              onClick={() => handleDeleteProduct(product)}
+                              className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                            >
                               <FaTrash className="w-4 h-4" />
                               Eliminar
                             </button>
@@ -316,6 +370,64 @@ export default function AdminPanel() {
             setEditingProduct(null);
           }}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && productToDelete && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={cancelDelete}
+        >
+          <div 
+            className="bg-[#FAF4E4] rounded-2xl shadow-2xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h2 className="text-2xl font-bold font-baloo text-gray-800 mb-2">
+                  ¿Eliminar Producto?
+                </h2>
+                <p className="text-gray-600 font-baloo">
+                  Estás a punto de eliminar:
+                </p>
+                <p className="text-xl font-bold font-baloo text-[#FF6B35] mt-2">
+                  "{productToDelete.name || productToDelete.nombre}"
+                </p>
+                <p className="text-sm text-gray-500 mt-4 font-baloo">
+                  Esta acción no se puede deshacer. Se eliminarán todas las imágenes asociadas.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDelete}
+                  disabled={deleting}
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-baloo font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={deleting}
+                  className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-baloo font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {deleting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Eliminando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaTrash className="w-4 h-4" />
+                      <span>Eliminar</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

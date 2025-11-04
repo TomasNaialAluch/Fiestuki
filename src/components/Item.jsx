@@ -47,19 +47,22 @@ export default function Item({ item }) {
         <div className="relative bg-[#F0E8D8] p-3">
           <div className="w-full overflow-hidden rounded-lg h-28 md:h-auto md:aspect-[4/3] relative">
             {isOutOfStock && (
-              <div className="absolute inset-0 bg-black bg-opacity-60 z-10 flex items-center justify-center">
-                <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold font-baloo text-lg">
-                  AGOTADO
-                </div>
-              </div>
+              <div className="absolute inset-0 bg-black bg-opacity-60 z-0"></div>
             )}
             <img 
               src={item.mainImage || item.images?.[0] || item.imagen} 
               alt={item.name || item.nombre} 
               className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-50' : ''}`}
             />
+            {isOutOfStock && (
+              <div className="absolute inset-0 flex items-center justify-center z-1 pointer-events-none">
+                <div className="bg-[#DC2626] text-white px-4 py-2 rounded-lg font-bold font-baloo text-lg">
+                  AGOTADO
+                </div>
+              </div>
+            )}
           </div>
-          <div className="absolute bottom-2 right-2 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo">
+          <div className="absolute bottom-2 right-2 bg-[#FF6B35] text-white px-2 py-1 rounded-full text-xs font-bold font-baloo z-1">
             {item.category || item.categoria}
           </div>
         </div>
