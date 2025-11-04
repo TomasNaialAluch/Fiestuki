@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PaymentMethods from './PaymentMethods.jsx';
+import ShareButton from './ShareButton.jsx';
 import { useCart } from '../context/CartContext';
 import { useUI } from '../context/UIContext';
 
@@ -135,6 +136,11 @@ const ItemDetailMobile = ({
         </div>
 
         <PaymentMethods />
+
+        {/* Botón compartir */}
+        <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+          <ShareButton item={item} />
+        </div>
 
         {/* Descripción del producto */}
         {(item.description || item.descripcion) && (

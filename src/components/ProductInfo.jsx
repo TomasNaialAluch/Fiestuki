@@ -1,5 +1,6 @@
 import React from 'react';
 import PaymentMethods from './PaymentMethods.jsx';
+import ShareButton from './ShareButton.jsx';
 
 const ProductInfo = ({ item, quantity, setQuantity, onAddToCart, error }) => {
   const formatPrice = (price) => price?.toLocaleString();
@@ -30,6 +31,11 @@ const ProductInfo = ({ item, quantity, setQuantity, onAddToCart, error }) => {
 
       {/* Métodos de pago */}
       <PaymentMethods />
+
+      {/* Botón compartir */}
+      <div style={{ marginBottom: '24px' }}>
+        <ShareButton item={item} />
+      </div>
 
       {/* Descripción del producto */}
       {(item.description || item.descripcion) && (
